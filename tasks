@@ -6,6 +6,9 @@ for command in "$@"
 do
   echo "--- ${command} ---"
   case "${command}" in
+    test)
+        pipenv run test
+        ;;
     format)
         pipenv run format-import
         pipenv run format
@@ -21,6 +24,8 @@ do
         pipenv run typecheck
         ;;
     clean)
+        find ./tests -type f -name "*.pyc" -delete
+        find ./tests -type d -name "__pycache__" -delete
         find ./src -type f -name "*.pyc" -delete
         find ./src -type d -name "__pycache__" -delete
         find ./src -type f -path "*.egg-info*" -delete
@@ -33,7 +38,7 @@ do
         pipenv install -d
         ;;
     validate)
-        ./tasks check-format typecheck lint
+        ./tasks check-format typecheck lint test
         ;;
     dojo-validate)
         dojo "./tasks devenv validate"

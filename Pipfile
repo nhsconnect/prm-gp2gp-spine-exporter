@@ -17,14 +17,17 @@ flake8-builtins="~=1.5"
 flake8-print="~=4.0"
 isort = "~=5.9"
 mypy = "~=0.9"
+pytest-cov = "~=3.0"
+pytest = "~=6.2"
 
 [requires]
 python_version = "3.9"
 
 [scripts]
-format-import = "isort src/ setup.py"
-format = "black -t py39 -l100 src/ setup.py"
-check-format = "black --check -t py39 -l100 src/ setup.py"
-typecheck = "mypy src/"
-lint-flake8 = "flake8 src/ setup.py"
+test = "pytest --cov=prmexporter --cov-report=term-missing tests/unit"
+format-import = "isort src/ tests/ setup.py"
+format = "black -t py39 -l100 src/ tests/ setup.py"
+check-format = "black --check -t py39 -l100 src/ tests/ setup.py"
+typecheck = "mypy src/ tests/"
+lint-flake8 = "flake8 src/ tests/ setup.py"
 lint-bandit = "bandit -r src/"
