@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+for command in "$@"
+do
+  echo "--- ${command} ---"
+  case "${command}" in
+    format)
+        pipenv run format
+        ;;
+    check-format)
+        pipenv run check-format
+        ;;
+    clean)
+        find ./src -type f -name "*.pyc" -delete
+        find ./src -type d -name "__pycache__" -delete
+        find ./src -type f -path "*.egg-info*" -delete
+        find ./src -type d -path "*.egg-info" -delete
+        rm -rf build/ dist/ .pytest_cache/
+        ;;
+    devenv)
+        echo "./tasks validate" > .git/hooks/pre-commit
+        chmod +x .git/hooks/pre-commit
+        pipenv install -d
+        ;;
+    validate)
+        ./tasks check-format
+        ;;
+    dojo-validate)
+        dojo "./tasks devenv validate"
+        ;;
+    *)
+        echo "Invalid command: '${command}'"
+        exit 1
+        ;;
+  esac
+done
+
+set +e
