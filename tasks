@@ -12,6 +12,10 @@ do
     check-format)
         pipenv run check-format
         ;;
+    lint)
+        pipenv run lint-flake8
+        pipenv run lint-bandit
+        ;;
     typecheck)
         pipenv run typecheck
         ;;
@@ -28,7 +32,7 @@ do
         pipenv install -d
         ;;
     validate)
-        ./tasks check-format typecheck
+        ./tasks check-format typecheck lint
         ;;
     dojo-validate)
         dojo "./tasks devenv validate"

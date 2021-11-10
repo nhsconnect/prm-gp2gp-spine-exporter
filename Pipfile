@@ -8,6 +8,13 @@ prm-spine-exporter = {editable = true, path = "."}
 
 [dev-packages]
 black = "==21.9b0"
+bandit = "~=1.7"
+flake8 = "~=3.9"
+flake8-bugbear="~=21.9"
+flake8-comprehensions="~=3.6"
+mccabe="~=0.6"
+flake8-builtins="~=1.5"
+flake8-print="~=4.0"
 mypy = "~=0.9"
 
 [requires]
@@ -17,3 +24,5 @@ python_version = "3.9"
 format = "black -t py39 -l100 src/ setup.py"
 check-format = "black --check -t py39 -l100 src/ setup.py"
 typecheck = "mypy src/"
+lint-flake8 = "flake8 src/ setup.py"
+lint-bandit = "bandit -r src/"
