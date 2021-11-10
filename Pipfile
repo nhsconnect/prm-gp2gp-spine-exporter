@@ -8,6 +8,7 @@ prm-spine-exporter = {editable = true, path = "."}
 
 [dev-packages]
 black = "==21.9b0"
+mypy = "~=0.9"
 
 [requires]
 python_version = "3.9"
@@ -15,3 +16,4 @@ python_version = "3.9"
 [scripts]
 format = "black -t py39 -l100 src/ setup.py"
 check-format = "black --check -t py39 -l100 src/ setup.py"
+typecheck = "mypy src/"

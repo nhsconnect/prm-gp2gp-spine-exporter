@@ -1,4 +1,4 @@
-def main() -> int:
+def main():
     print("Hello world")
 
 

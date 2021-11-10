@@ -12,6 +12,9 @@ do
     check-format)
         pipenv run check-format
         ;;
+    typecheck)
+        pipenv run typecheck
+        ;;
     clean)
         find ./src -type f -name "*.pyc" -delete
         find ./src -type d -name "__pycache__" -delete
@@ -25,7 +28,7 @@ do
         pipenv install -d
         ;;
     validate)
-        ./tasks check-format
+        ./tasks check-format typecheck
         ;;
     dojo-validate)
         dojo "./tasks devenv validate"
