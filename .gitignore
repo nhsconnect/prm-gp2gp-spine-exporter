@@ -1,0 +1,16 @@
+.DS_Store
+.idea/
+.vscode/
+.env
+
+build/
+dist/
+venv/
+.mypy_cache/
+*.pyc
+*.egg-info
+.tox
+.coverage
+audit-output.txt
+typings
+gp2gp_examples.md
