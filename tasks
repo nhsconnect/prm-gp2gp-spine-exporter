@@ -46,6 +46,17 @@ do
     dojo-validate)
         dojo "./tasks devenv validate"
         ;;
+    publish-docker)
+        if [ -z $IMAGE_TAG ]; then
+            echo "Please set IMAGE_TAG environment variable"
+            exit 1
+        fi
+        ecr_login=$(dojo "./scripts/ecr-helper get-login")
+        ecr_repo_uri=$(dojo "./scripts/ecr-helper get-repo-uri")
+        docker build -t ${ecr_repo_uri}:latest -t ${ecr_repo_uri}:${IMAGE_TAG} --build-arg IMAGE_TAG=$IMAGE_TAG .
+        eval $ecr_login
+        docker push ${ecr_repo_uri}:${IMAGE_TAG}
+        ;;
     dep)
         ./tasks check-deps > audit-output.txt
         ;;
