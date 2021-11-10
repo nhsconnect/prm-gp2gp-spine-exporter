@@ -23,6 +23,9 @@ do
     typecheck)
         pipenv run typecheck
         ;;
+    check-deps)
+        pipenv check
+        ;;
     clean)
         find ./tests -type f -name "*.pyc" -delete
         find ./tests -type d -name "__pycache__" -delete
@@ -42,6 +45,12 @@ do
         ;;
     dojo-validate)
         dojo "./tasks devenv validate"
+        ;;
+    dep)
+        ./tasks check-deps > audit-output.txt
+        ;;
+    dojo-dep)
+        dojo "./tasks devenv dep"
         ;;
     *)
         echo "Invalid command: '${command}'"
