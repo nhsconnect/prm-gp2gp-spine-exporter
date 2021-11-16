@@ -1,7 +1,7 @@
 import logging
 
+from prmexporter.domain.http_client import HttpClient
 from prmexporter.utils.io.json_formatter import JsonFormatter
-from src.prmexporter.pipeline.make_api_call import make_api_call
 
 logger = logging.getLogger("prmexporter")
 
@@ -14,11 +14,11 @@ def _setup_logger():
     logger.addHandler(handler)
 
 
-def main() -> int:
+def main():
     _setup_logger()
-    response = make_api_call("https://jsonplaceholder.typicode.com/todos/1")
+    http_client = HttpClient(url="https://jsonplaceholder.typicode.com/todos/1")
+    response = http_client.fetch_data()
     logger.info("Success!", extra={"response": response})
-    return 1
 
 
 if __name__ == "__main__":

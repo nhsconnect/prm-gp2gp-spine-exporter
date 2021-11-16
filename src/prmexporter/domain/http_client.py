@@ -8,11 +8,11 @@ class HttpClientException(Exception):
 
 
 class HttpClient:
-    def __init__(self, url, client=requests):
+    def __init__(self, url: str, client=requests):
         self._url = url
         self._client = client
 
-    def fetch_data(self):
+    def fetch_data(self) -> object:
         response = self._client.get(self._url)
         if response.status_code != 200:
             raise HttpClientException(
