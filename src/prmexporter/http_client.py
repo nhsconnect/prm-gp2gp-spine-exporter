@@ -13,7 +13,7 @@ class HttpClient:
         self._client = client
 
     def fetch_data(self, auth_token: str) -> object:
-        headers = {"Authorization": f"Bearer {auth_token}"}
+        headers = {"Accept": "application/json", "Authorization": f"Bearer {auth_token}"}
         response = self._client.get(url=self._url, headers=headers)
 
         if response.status_code != 200:

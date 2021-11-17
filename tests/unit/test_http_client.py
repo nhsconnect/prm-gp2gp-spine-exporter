@@ -24,7 +24,7 @@ def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
 
     http_client = HttpClient(url=test_url, client=mock_client)
 
-    expected_header = {"Authorization": f"Bearer {test_token}"}
+    expected_header = {"Accept": "application/json", "Authorization": f"Bearer {test_token}"}
     expected_data = {"data": [{"fruit": "mango", "colour": "orange"}]}
 
     actual_data = http_client.fetch_data(test_token)
