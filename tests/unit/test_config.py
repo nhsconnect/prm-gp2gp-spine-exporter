@@ -2,7 +2,7 @@ from typing import Dict
 
 import pytest
 
-from prmexporter.pipeline.config import MissingEnvironmentVariable, SpineExporterConfig
+from prmexporter.config import MissingEnvironmentVariable, SpineExporterConfig
 
 
 def test_reads_from_environment_variables():

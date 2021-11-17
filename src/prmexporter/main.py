@@ -1,8 +1,8 @@
 import logging
 from os import environ
 
-from prmexporter.domain.http_client import HttpClient
-from prmexporter.pipeline.config import SpineExporterConfig
+from prmexporter.config import SpineExporterConfig
+from prmexporter.http_client import HttpClient
 from prmexporter.utils.io.json_formatter import JsonFormatter
 
 logger = logging.getLogger("prmexporter")
