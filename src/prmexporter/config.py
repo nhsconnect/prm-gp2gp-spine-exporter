@@ -24,11 +24,12 @@ class EnvConfig:
 @dataclass
 class SpineExporterConfig:
     splunk_url: str
-    splunk_api_token: str
+    splunk_api_token_param_name: str
 
     @classmethod
     def from_environment_variables(cls, env_vars):
         env = EnvConfig(env_vars)
         return SpineExporterConfig(
-            splunk_url=env.read_env("SPLUNK_URL"), splunk_api_token=env.read_env("SPLUNK_API_TOKEN")
+            splunk_url=env.read_env("SPLUNK_URL"),
+            splunk_api_token_param_name=env.read_env("SPLUNK_API_TOKEN_PARAM_NAME"),
         )

@@ -4,9 +4,14 @@ from prmexporter.config import MissingEnvironmentVariable, SpineExporterConfig
 
 
 def test_reads_from_environment_variables():
-    environment = {"SPLUNK_URL": "https://test.com", "SPLUNK_API_TOKEN": "abc123"}
+    environment = {
+        "SPLUNK_URL": "https://test.com",
+        "SPLUNK_API_TOKEN_PARAM_NAME": "/param/name/api-token",
+    }
 
-    expected_config = SpineExporterConfig(splunk_url="https://test.com", splunk_api_token="abc123")
+    expected_config = SpineExporterConfig(
+        splunk_url="https://test.com", splunk_api_token_param_name="/param/name/api-token"
+    )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
 
@@ -14,7 +19,7 @@ def test_reads_from_environment_variables():
 
 
 def test_error_from_environment_when_required_fields_are_not_set():
-    environment = {"SPLUNK_API_TOKEN": "abc123"}
+    environment = {"SPLUNK_API_TOKEN_PARAM_NAME": "/param/name/api-token"}
 
     with pytest.raises(MissingEnvironmentVariable) as e:
         SpineExporterConfig.from_environment_variables(environment)
