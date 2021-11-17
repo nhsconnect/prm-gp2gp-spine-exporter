@@ -12,9 +12,10 @@ def _build_mock_response(content=None, status_code=200):
     return mock_response
 
 
-def test_makes_an_api_call_to_given_url_and_returns_response():
+def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
     mock_client = MagicMock()
     test_url = "https://test.com"
+    test_token = "Abc123"
     mock_response = _build_mock_response(
         content=b'{"data": [{"fruit": "mango", "colour": "orange"}]}'
     )
@@ -23,16 +24,18 @@ def test_makes_an_api_call_to_given_url_and_returns_response():
 
     http_client = HttpClient(url=test_url, client=mock_client)
 
-    expected = {"data": [{"fruit": "mango", "colour": "orange"}]}
+    expected_header = {"Authorization": f"Bearer {test_token}"}
+    expected_data = {"data": [{"fruit": "mango", "colour": "orange"}]}
 
-    actual = http_client.fetch_data()
+    actual_data = http_client.fetch_data(test_token)
 
-    mock_client.get.assert_called_with(test_url)
-    assert actual == expected
+    mock_client.get.assert_called_with(url=test_url, headers=expected_header)
+    assert actual_data == expected_data
 
 
 def test_throws_exception_when_status_code_is_not_200():
     mock_client = MagicMock()
+    test_token = "Abc123"
     mock_response = _build_mock_response(status_code=500)
 
     mock_client.get.side_effect = [mock_response]
@@ -40,6 +43,6 @@ def test_throws_exception_when_status_code_is_not_200():
     http_client = HttpClient(url="test.com", client=mock_client)
 
     with pytest.raises(HttpClientException) as e:
-        http_client.fetch_data()
+        http_client.fetch_data(test_token)
 
     assert str(e.value) == "Unable to fetch data from test.com with status code: 500"

@@ -1,14 +1,12 @@
-from typing import Dict
-
 import pytest
 
 from prmexporter.config import MissingEnvironmentVariable, SpineExporterConfig
 
 
 def test_reads_from_environment_variables():
-    environment = {"SPLUNK_URL": "https://test.com"}
+    environment = {"SPLUNK_URL": "https://test.com", "SPLUNK_API_TOKEN": "abc123"}
 
-    expected_config = SpineExporterConfig(splunk_url="https://test.com")
+    expected_config = SpineExporterConfig(splunk_url="https://test.com", splunk_api_token="abc123")
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
 
@@ -16,7 +14,7 @@ def test_reads_from_environment_variables():
 
 
 def test_error_from_environment_when_required_fields_are_not_set():
-    environment: Dict[str, str] = {}
+    environment = {"SPLUNK_API_TOKEN": "abc123"}
 
     with pytest.raises(MissingEnvironmentVariable) as e:
         SpineExporterConfig.from_environment_variables(environment)
