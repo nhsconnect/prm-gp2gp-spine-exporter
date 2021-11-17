@@ -4,4 +4,4 @@ COPY . /prmexporter
 
 RUN cd /prmexporter && python setup.py install
 
-ENTRYPOINT ["python", "-m", "prmexporter.pipeline.main"]
+ENTRYPOINT ["python", "-m", "prmexporter.main"]

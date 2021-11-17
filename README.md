@@ -7,7 +7,7 @@ This repo contains the spine exporter. It is responsible for retrieving data fro
 The spine exporter can be installed via `python setup.py install`, or packaged into a docker container via `docker build`.
 Alternatively, you can download one of the docker containers already published to ECR.
 
-The main code entrypoint is via `python -m prmexporter.pipeline.main`.
+The main code entrypoint is via `python -m prmexporter.main`.
 
 
 ## Developing
