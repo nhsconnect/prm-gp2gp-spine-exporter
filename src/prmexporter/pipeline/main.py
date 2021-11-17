@@ -1,6 +1,8 @@
 import logging
+from os import environ
 
 from prmexporter.domain.http_client import HttpClient
+from prmexporter.pipeline.config import SpineExporterConfig
 from prmexporter.utils.io.json_formatter import JsonFormatter
 
 logger = logging.getLogger("prmexporter")
@@ -16,7 +18,9 @@ def _setup_logger():
 
 def main():
     _setup_logger()
-    http_client = HttpClient(url="https://jsonplaceholder.typicode.com/todos/1")
+
+    config = SpineExporterConfig.from_environment_variables(environ)
+    http_client = HttpClient(url=config.splunk_url)
     response = http_client.fetch_data()
     logger.info("Success!", extra={"response": response})
 
