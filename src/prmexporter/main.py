@@ -31,7 +31,7 @@ def main():
     logger.info("Attempting to fetch data from: " + config.splunk_url)
 
     http_client = HttpClient(url=config.splunk_url)
-    response = http_client.fetch_data(auth_token=splunk_api_token)
+    response = http_client.fetch_data(auth_token=splunk_api_token, method="POST")
 
     logger.info("Success!", extra={"response": response})
 
