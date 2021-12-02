@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import Optional
 
 import requests
 
@@ -16,14 +15,9 @@ class HttpClient:
         self._url = url
         self._client = client
 
-    def fetch_data(self, auth_token: str, method: Optional[str] = "GET") -> object:
+    def fetch_data(self, auth_token: str) -> object:
         headers = {"Accept": "application/json", "Authorization": f"Bearer {auth_token}"}
-
-        if method == "POST":
-            request_body_json = json.dumps({"output_mode": "json", "preview": 0})
-            response = self._client.post(url=self._url, headers=headers, data=request_body_json)
-        else:
-            response = self._client.get(url=self._url, headers=headers)
+        response = self._client.get(url=self._url, headers=headers)
 
         if response is None or response == "":
             raise HttpClientException(f"No response from {self._url}")
