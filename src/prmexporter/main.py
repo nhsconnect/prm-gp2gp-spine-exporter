@@ -28,12 +28,10 @@ def main():
     secret_manager = SsmSecretManager(ssm)
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
-    logger.info("Attempting to fetch data from: " + config.splunk_url)
-
     http_client = HttpClient(url=config.splunk_url)
-    response = http_client.fetch_data(auth_token=splunk_api_token)
+    response_content = http_client.fetch_data(auth_token=splunk_api_token)
 
-    logger.info("Success!", extra={"response": response})
+    logger.info("Response content", extra={"response_content": response_content})
 
 
 if __name__ == "__main__":
