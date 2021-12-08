@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 import pytest
 
@@ -20,16 +20,16 @@ def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
         content=b'{"data": [{"fruit": "mango", "colour": "orange"}]}'
     )
 
-    mock_client.get.side_effect = [mock_response]
+    mock_client.post.side_effect = [mock_response]
 
     http_client = HttpClient(url=test_url, client=mock_client)
 
     expected_header = {"Authorization": f"Bearer {test_token}"}
-    expected_data = {"data": [{"fruit": "mango", "colour": "orange"}]}
+    expected_data = b'{"data": [{"fruit": "mango", "colour": "orange"}]}'
 
     actual_data = http_client.fetch_data(test_token)
 
-    mock_client.get.assert_called_with(url=test_url, headers=expected_header)
+    mock_client.post.assert_called_with(url=test_url, data=ANY, headers=expected_header)
     assert actual_data == expected_data
 
 
@@ -38,7 +38,7 @@ def test_throws_exception_when_status_code_is_not_200():
     test_token = "Abc123"
     mock_response = _build_mock_response(status_code=500)
 
-    mock_client.get.side_effect = [mock_response]
+    mock_client.post.side_effect = [mock_response]
 
     http_client = HttpClient(url="test.com", client=mock_client)
 

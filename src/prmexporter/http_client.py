@@ -36,4 +36,4 @@ class HttpClient:
 
         logger.info("Successfully fetched data from splunk", extra={"response": str(response)})
 
-        return str(response.content)
+        return response.content
