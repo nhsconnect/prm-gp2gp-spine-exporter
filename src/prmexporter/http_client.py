@@ -34,6 +34,9 @@ class HttpClient:
                 f"Unable to fetch data from {self._url} with status code: {response.status_code}"
             )
 
-        logger.info("Successfully fetched data from splunk", extra={"response": str(response)})
+        logger.info(
+            "Successfully fetched data from splunk",
+            extra={"Response content": str(response.content)},
+        )
 
         return response.content
