@@ -3,7 +3,7 @@ from io import BytesIO
 import boto3
 from moto import mock_s3
 
-from src.prmexporter.io.s3 import S3DataManager
+from prmexporter.io.s3 import S3DataManager
 from tests.builders.file import build_csv_contents
 
 MOTO_MOCK_REGION = "us-east-1"

@@ -8,8 +8,8 @@ import requests
 from prmexporter.config import SpineExporterConfig
 from prmexporter.io.http_client import HttpClient
 from prmexporter.io.json_formatter import JsonFormatter
+from prmexporter.io.s3 import S3DataManager
 from prmexporter.io.secret_manager import SsmSecretManager
-from src.prmexporter.io.s3 import S3DataManager
 
 logger = logging.getLogger("prmexporter")
 

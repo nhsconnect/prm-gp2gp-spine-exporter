@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from src.prmexporter.io.s3 import S3DataManager
+from prmexporter.io.s3 import S3DataManager
 from tests.builders.file import build_bytes_io_contents, build_csv_contents
 
 MOTO_MOCK_REGION = "us-east-1"
