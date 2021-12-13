@@ -11,15 +11,15 @@ class S3DataManager:
         self._s3_spine_output_data_bucket = self._client.Bucket(self._bucket_name)
 
     def write_csv(self, data: BytesIO, s3_key: str):
-        object_uri = "s3://{self._bucket_name}/{s3_key}"
+        object_uri = f"s3://{self._bucket_name}/{s3_key}"
         logger.info(
             "Attempting to upload to",
-            extra={"event": "ATTEMPTING_UPLOAD_PARQUET_TO_S3", "object_uri": object_uri},
+            extra={"event": "ATTEMPTING_UPLOAD_CSV_TO_S3", "object_uri": object_uri},
         )
 
         self._s3_spine_output_data_bucket.upload_fileobj(data, s3_key)
 
         logger.info(
             "Successfully uploaded to to S3",
-            extra={"event": "UPLOADED_PARQUET_TO_S3", "object_uri": object_uri},
+            extra={"event": "UPLOADED_CSV_TO_S3", "object_uri": object_uri},
         )
