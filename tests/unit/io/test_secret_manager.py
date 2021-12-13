@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from prmexporter.secret_manager import SsmSecretManager
+from prmexporter.io.secret_manager import SsmSecretManager
 
 
 def _build_mock_ssm_client(secrets):

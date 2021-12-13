@@ -5,9 +5,9 @@ from os import environ
 import boto3
 
 from prmexporter.config import SpineExporterConfig
-from prmexporter.http_client import HttpClient
+from prmexporter.io.http_client import HttpClient
 from prmexporter.io.json_formatter import JsonFormatter
-from prmexporter.secret_manager import SsmSecretManager
+from prmexporter.io.secret_manager import SsmSecretManager
 
 logger = logging.getLogger("prmexporter")
 
