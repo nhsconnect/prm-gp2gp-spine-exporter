@@ -7,10 +7,13 @@ def test_reads_from_environment_variables():
     environment = {
         "SPLUNK_URL": "https://test.com",
         "SPLUNK_API_TOKEN_PARAM_NAME": "/param/name/api-token",
+        "OUTPUT_SPINE_DATA_BUCKET": "output-spine-data-bucket",
     }
 
     expected_config = SpineExporterConfig(
-        splunk_url="https://test.com", splunk_api_token_param_name="/param/name/api-token"
+        splunk_url="https://test.com",
+        splunk_api_token_param_name="/param/name/api-token",
+        output_spine_data_bucket="output-spine-data-bucket",
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
