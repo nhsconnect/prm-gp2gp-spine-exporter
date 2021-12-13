@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import requests
 
@@ -14,20 +15,11 @@ class HttpClient:
         self._url = url
         self._client = client
 
-    def fetch_data(self, auth_token: str) -> bytes:
+    def fetch_data(self, auth_token: str, request_body: Optional[object] = None) -> bytes:
         logger.info("Attempting to fetch data from: " + self._url)
 
         headers = {"Authorization": f"Bearer {auth_token}"}
-        data = {
-            "output_mode": "csv",
-            "earliest_time": 1638835200,
-            "latest_time": 1638921600,
-            "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
-            | head 1
-            | table _time, conversationID, GUID, interactionID, messageSender,
-            messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
-        }
-        response = self._client.post(url=self._url, data=data, headers=headers)
+        response = self._client.get(url=self._url, data=request_body, headers=headers)
 
         if response.status_code != 200:
             raise HttpClientException(

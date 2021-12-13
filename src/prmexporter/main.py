@@ -33,7 +33,18 @@ def main():
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
     http_client = HttpClient(url=config.splunk_url)
-    api_response_content = http_client.fetch_data(auth_token=splunk_api_token)
+
+    data = {
+        "output_mode": "csv",
+        "earliest_time": 1638835200,
+        "latest_time": 1638921600,
+        "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
+        | head 1
+        | table _time, conversationID, GUID, interactionID, messageSender,
+        messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
+    }
+
+    api_response_content = http_client.fetch_data(auth_token=splunk_api_token, request_body=data)
 
     s3 = boto3.resource("s3")
     s3_spine_output_data_bucket = s3.Bucket(name=config.output_spine_data_bucket)
