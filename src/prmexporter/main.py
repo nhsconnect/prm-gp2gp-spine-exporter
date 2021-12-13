@@ -39,7 +39,6 @@ def main():
         "earliest_time": 1638835200,
         "latest_time": 1638921600,
         "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
-        | head 1
         | table _time, conversationID, GUID, interactionID, messageSender,
         messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
     }
