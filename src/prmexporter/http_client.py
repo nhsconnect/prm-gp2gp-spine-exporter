@@ -14,7 +14,7 @@ class HttpClient:
         self._url = url
         self._client = client
 
-    def fetch_data(self, auth_token: str) -> object:
+    def fetch_data(self, auth_token: str) -> bytes:
         logger.info("Attempting to fetch data from: " + self._url)
 
         headers = {"Authorization": f"Bearer {auth_token}"}
