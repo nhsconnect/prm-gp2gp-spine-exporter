@@ -3,6 +3,7 @@ import logging
 from os import environ
 
 import boto3
+import requests
 
 from prmexporter.config import SpineExporterConfig
 from prmexporter.io.http_client import HttpClient
@@ -32,8 +33,6 @@ def main():
     secret_manager = SsmSecretManager(ssm)
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
-    http_client = HttpClient(url=config.splunk_url)
-
     data = {
         "output_mode": "csv",
         "earliest_time": 1638835200,
@@ -44,7 +43,10 @@ def main():
         messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
     }
 
-    api_response_content = http_client.fetch_data(auth_token=splunk_api_token, request_body=data)
+    http_client = HttpClient(client=requests)
+    api_response_content = http_client.fetch_data(
+        url=config.splunk_url, auth_token=splunk_api_token, request_body=data
+    )
 
     s3 = boto3.resource("s3")
     s3_spine_output_data_bucket = s3.Bucket(name=config.output_spine_data_bucket)
