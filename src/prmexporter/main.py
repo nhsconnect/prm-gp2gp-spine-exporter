@@ -9,6 +9,7 @@ from prmexporter.config import SpineExporterConfig
 from prmexporter.io.http_client import HttpClient
 from prmexporter.io.json_formatter import JsonFormatter
 from prmexporter.io.secret_manager import SsmSecretManager
+from src.prmexporter.io.s3 import S3DataManager
 
 logger = logging.getLogger("prmexporter")
 
@@ -48,11 +49,10 @@ def main():
         url=config.splunk_url, auth_token=splunk_api_token, request_body=data
     )
 
-    s3 = boto3.resource("s3")
-    s3_spine_output_data_bucket = s3.Bucket(name=config.output_spine_data_bucket)
-
-    s3_spine_output_data_bucket.upload_fileobj(
-        io.BytesIO(api_response_content), f"{VERSION}/test-spine-data.csv"
+    s3_client = boto3.resource("s3")
+    s3_manager = S3DataManager(client=s3_client, bucket_name=config.output_spine_data_bucket)
+    s3_manager.write_csv(
+        data=io.BytesIO(api_response_content), s3_key=f"{VERSION}/test-spine-data.csv"
     )
 
 
