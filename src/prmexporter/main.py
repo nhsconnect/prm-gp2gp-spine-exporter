@@ -36,10 +36,12 @@ def main():
     api_response_content = http_client.fetch_data(auth_token=splunk_api_token)
 
     s3_client = boto3.resource("s3")
-    s3_spine_output_data_bucket = s3_client.Bucket(config.output_bucket)
+    s3_spine_output_data_bucket = s3_client.Bucket(config.output_spine_data_bucket)
+
     buffer = io.BytesIO()
     buffer.write(api_response_content)
     buffer.seek(0)
+
     s3_spine_output_data_bucket.upload_fileobj(
         api_response_content, f"{VERSION}/test-spine-data.csv"
     )
