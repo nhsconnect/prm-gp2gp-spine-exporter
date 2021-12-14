@@ -1,5 +1,5 @@
-import io
 import logging
+from io import BytesIO
 from os import environ
 
 import boto3
@@ -36,8 +36,8 @@ def main():
 
     data = {
         "output_mode": "csv",
-        "earliest_time": 1638835200,
-        "latest_time": 1638921600,
+        "earliest_time": 1635724800,
+        "latest_time": 1638316800,
         "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
         | table _time, conversationID, GUID, interactionID, messageSender,
         messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
@@ -51,7 +51,7 @@ def main():
     s3_client = boto3.resource("s3")
     s3_manager = S3DataManager(client=s3_client, bucket_name=config.output_spine_data_bucket)
     s3_manager.write_csv(
-        data=io.BytesIO(api_response_content), s3_key=f"{VERSION}/test-spine-data.csv"
+        data=BytesIO(api_response_content), s3_key=f"{VERSION}/test-spine-data.csv"
     )
 
 
