@@ -37,7 +37,7 @@ def main():
     data = {
         "output_mode": "csv",
         "earliest_time": 1638316800,
-        "latest_time": 1638403200,
+        "latest_time": 1638489600,
         "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
         | table _time, conversationID, GUID, interactionID, messageSender,
         messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
