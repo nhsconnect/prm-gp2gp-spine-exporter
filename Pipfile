@@ -21,6 +21,7 @@ moto = {version = "~=2.2", extras = ["server"]}
 mypy = "~=0.9"
 pytest-cov = "~=3.0"
 pytest = "~=6.2"
+types-freezegun = "~=1.1"
 types-requests = "~=2.26"
 
 [requires]
