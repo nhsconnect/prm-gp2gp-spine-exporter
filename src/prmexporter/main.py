@@ -10,6 +10,7 @@ from prmexporter.io.http_client import HttpClient
 from prmexporter.io.json_formatter import JsonFormatter
 from prmexporter.io.s3 import S3DataManager
 from prmexporter.io.secret_manager import SsmSecretManager
+from prmexporter.io.time_calculator import TimeCalculator
 
 logger = logging.getLogger("prmexporter")
 
@@ -34,10 +35,14 @@ def main():
     secret_manager = SsmSecretManager(ssm)
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
+    time_calculator = TimeCalculator()
+    earliest_time = time_calculator.get_yesterday_midnight_unix_timestamp()
+    latest_time = time_calculator.get_today_midnight_unix_timestamp()
+
     data = {
         "output_mode": "csv",
-        "earliest_time": 1638316800,
-        "latest_time": 1638489600,
+        "earliest_time": earliest_time,
+        "latest_time": latest_time,
         "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
         | table _time, conversationID, GUID, interactionID, messageSender,
         messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
