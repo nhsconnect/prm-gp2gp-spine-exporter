@@ -47,3 +47,36 @@ def test_returns_yesterday_midnight_when_changing_years():
     expected_yesterday_midnight = 1609372800
 
     assert actual_yesterday_midnight == expected_yesterday_midnight
+
+
+@freeze_time(datetime(year=2021, month=1, day=1, hour=2, second=0))
+def test_returns_year_of_today():
+    time_calculator = TimeCalculator()
+
+    actual_year = time_calculator.get_year()
+
+    expected_year = 2021
+
+    assert actual_year == expected_year
+
+
+@freeze_time(datetime(year=2021, month=1, day=1, hour=2, second=0))
+def test_returns_month_of_today():
+    time_calculator = TimeCalculator()
+
+    actual_month = time_calculator.get_month()
+
+    expected_month = 1
+
+    assert actual_month == expected_month
+
+
+@freeze_time(datetime(year=2021, month=1, day=27, hour=2, second=0))
+def test_returns_day_of_today():
+    time_calculator = TimeCalculator()
+
+    actual_day = time_calculator.get_day()
+
+    expected_day = 27
+
+    assert actual_day == expected_day

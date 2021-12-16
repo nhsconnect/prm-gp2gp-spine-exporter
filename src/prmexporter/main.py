@@ -55,8 +55,14 @@ def main():
 
     s3_client = boto3.resource("s3")
     s3_manager = S3DataManager(client=s3_client, bucket_name=config.output_spine_data_bucket)
+
+    year = time_calculator.get_year()
+    month = time_calculator.get_month()
+    day = time_calculator.get_day()
+
     s3_manager.write_csv(
-        data=BytesIO(api_response_content), s3_key=f"{VERSION}/test-spine-data.csv"
+        data=BytesIO(api_response_content),
+        s3_key=f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv",
     )
 
 
