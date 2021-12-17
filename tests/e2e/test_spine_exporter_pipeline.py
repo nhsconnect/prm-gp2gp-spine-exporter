@@ -1,11 +1,11 @@
-import io
 import logging
-from io import BytesIO
+from datetime import datetime
 from os import environ
 from threading import Thread
 
 import boto3
 from botocore.config import Config
+from freezegun import freeze_time
 from moto.server import DomainDispatcherApplication, create_backend_app
 from werkzeug import Request, Response
 from werkzeug.serving import make_server
@@ -23,6 +23,17 @@ FAKE_S3_ACCESS_KEY = "testing"
 FAKE_S3_SECRET_KEY = "testing"
 FAKE_S3_REGION = "us-west-1"
 
+SPINE_DATA = (
+    b"""_time,conversationID,GUID,interactionID,
+        messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem"""
+    b"""2019-12-01T08:41:48.337+0000,abc,bcd,urn:nhs:names:services:gp2gp/MCCI_IN010000UK13,
+        987654321240,003456789123,bcd,NONE,SupplierC,SupplierA"""
+    b"""2019-12-01T18:02:29.985+0000,cde,cde,urn:nhs:names:services:gp2gp/RCMR_IN010000UK05,
+        123456789123,003456789123,NotProvided,NONE"""
+    b"""019-12-01T18:03:21.908+0000,cde,efg,urn:nhs:names:services:gp2gp/RCMR_IN030000UK06,
+        003456789123,123456789123,NotProvided,NONE"""
+)
+
 
 class ThreadedServer:
     def __init__(self, server):
@@ -37,18 +48,12 @@ class ThreadedServer:
         self._thread.join()
 
 
-def _read_csv(file_path):
-    with open(file_path, "r", encoding="utf-8") as file:
-        for line in file:
-            yield line
-
-
 @Request.application
-def fake_splunk_application(request):
-    return Response(_read_csv("../data/daily_spine_data.csv"), mimetype="text/csv")
+def fake_splunk_application(_):
+    return Response(SPINE_DATA, mimetype="text/csv")
 
 
-def _build_fake_s3(host, port):
+def _build_fake_aws(host, port):
     app = DomainDispatcherApplication(create_backend_app)
     server = make_server(host, port, app)
     return ThreadedServer(server)
@@ -64,15 +69,10 @@ def _disable_werkzeug_logging():
     log.setLevel(logging.ERROR)
 
 
-def _read_s3_csv_file(bucket, key):
-    f = BytesIO()
-    bucket.download_fileobj(key, f)
-    wrapper = io.TextIOWrapper(f, encoding="utf-8")
-    return wrapper.read()
-
-
-def _read_s3_metadata(bucket, key):
-    return bucket.Object(key).get()["Metadata"]
+def _read_s3_csv_file(s3_client, bucket, key):
+    s3_object = s3_client.Object(bucket, key)
+    response = s3_object.get()
+    return response["Body"].read().decode("utf-8")
 
 
 def _populate_ssm_parameter(name, value):
@@ -80,6 +80,7 @@ def _populate_ssm_parameter(name, value):
     ssm.put_parameter(Name=name, Value=value, Type="SecureString")
 
 
+@freeze_time(datetime(year=2021, month=11, day=13, hour=2, second=0))
 def test_with_s3():
     _disable_werkzeug_logging()
 
@@ -103,19 +104,16 @@ def test_with_s3():
     environ["OUTPUT_SPINE_DATA_BUCKET"] = output_bucket_name
     environ["SPLUNK_API_TOKEN_PARAM_NAME"] = api_token_param_name
     environ["S3_ENDPOINT_URL"] = FAKE_AWS_URL
-    # environ["BUILD_TAG"] = "61ad1e1c"
 
-    year = 2020
-    month = 1
-    day = 1
+    year = 2021
+    month = 11
+    day = 13
 
-    fake_s3 = _build_fake_s3(FAKE_AWS_HOST, FAKE_AWS_PORT)
+    fake_aws = _build_fake_aws(FAKE_AWS_HOST, FAKE_AWS_PORT)
     fake_splunk = _build_fake_splunk(FAKE_SPLUNK_HOST, FAKE_SPLUNK_PORT)
 
-    # expected_metadata = {"date-anchor": "2020-01-30T18:44:49+00:00", "build-tag": "61ad1e1c"}
-
     try:
-        fake_s3.start()
+        fake_aws.start()
         fake_splunk.start()
 
         output_bucket = s3.Bucket(output_bucket_name)
@@ -127,14 +125,11 @@ def test_with_s3():
 
         main()
 
-        actual = _read_s3_csv_file(output_bucket, output_path)
-        expected = _read_csv("../data/daily_spine_data.csv")
-
-        # actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
+        expected = SPINE_DATA.decode("utf-8")
+        actual = _read_s3_csv_file(s3, output_bucket_name, output_path)
 
         assert actual == expected
-        # assert actual_s3_metadata == expected_metadata
 
     finally:
         fake_splunk.stop()
-        fake_s3.stop()
+        fake_aws.stop()
