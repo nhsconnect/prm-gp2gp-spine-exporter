@@ -27,10 +27,10 @@ class TimeCalculator:
         return _to_unix_timestamp(self._yesterday_midnight)
 
     def get_year(self):
-        return self._today.year
+        return self._yesterday_midnight.year
 
     def get_month(self):
-        return self._today.month
+        return self._yesterday_midnight.month
 
     def get_day(self):
-        return self._today.day
+        return self._yesterday_midnight.day

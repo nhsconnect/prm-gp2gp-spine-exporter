@@ -23,16 +23,10 @@ FAKE_S3_ACCESS_KEY = "testing"
 FAKE_S3_SECRET_KEY = "testing"
 FAKE_S3_REGION = "us-west-1"
 
-SPINE_DATA = (
-    b"""_time,conversationID,GUID,interactionID,
-        messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem"""
-    b"""2019-12-01T08:41:48.337+0000,abc,bcd,urn:nhs:names:services:gp2gp/MCCI_IN010000UK13,
-        987654321240,003456789123,bcd,NONE,SupplierC,SupplierA"""
-    b"""2019-12-01T18:02:29.985+0000,cde,cde,urn:nhs:names:services:gp2gp/RCMR_IN010000UK05,
-        123456789123,003456789123,NotProvided,NONE"""
-    b"""019-12-01T18:03:21.908+0000,cde,efg,urn:nhs:names:services:gp2gp/RCMR_IN030000UK06,
-        003456789123,123456789123,NotProvided,NONE"""
-)
+SPINE_DATA = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
+    2019-12-01T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
+    2019-12-01T18:02:29.985+0000,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
+    019-12-01T18:03:21.908+0000,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
 
 
 class ThreadedServer:
@@ -69,8 +63,8 @@ def _disable_werkzeug_logging():
     log.setLevel(logging.ERROR)
 
 
-def _read_s3_csv_file(s3_client, bucket, key):
-    s3_object = s3_client.Object(bucket, key)
+def _read_s3_csv_file(s3_client, bucket_name, key):
+    s3_object = s3_client.Object(bucket_name, key)
     response = s3_object.get()
     return response["Body"].read().decode("utf-8")
 
@@ -78,6 +72,10 @@ def _read_s3_csv_file(s3_client, bucket, key):
 def _populate_ssm_parameter(name, value):
     ssm = boto3.client(service_name="ssm", endpoint_url=FAKE_AWS_URL)
     ssm.put_parameter(Name=name, Value=value, Type="SecureString")
+
+
+def _read_s3_metadata(bucket, key):
+    return bucket.Object(key).get()["Metadata"]
 
 
 @freeze_time(datetime(year=2021, month=11, day=13, hour=2, second=0))
@@ -104,10 +102,11 @@ def test_with_s3():
     environ["OUTPUT_SPINE_DATA_BUCKET"] = output_bucket_name
     environ["SPLUNK_API_TOKEN_PARAM_NAME"] = api_token_param_name
     environ["S3_ENDPOINT_URL"] = FAKE_AWS_URL
+    environ["BUILD_TAG"] = "61ad1e1c"
 
     year = 2021
     month = 11
-    day = 13
+    day = 12
 
     fake_aws = _build_fake_aws(FAKE_AWS_HOST, FAKE_AWS_PORT)
     fake_splunk = _build_fake_splunk(FAKE_SPLUNK_HOST, FAKE_SPLUNK_PORT)
@@ -115,6 +114,12 @@ def test_with_s3():
     try:
         fake_aws.start()
         fake_splunk.start()
+
+        expected_metadata = {
+            "search-start-time": "1636675200.0",
+            "search-end-time": "1636761600.0",
+            "build-tag": "61ad1e1c",
+        }
 
         output_bucket = s3.Bucket(output_bucket_name)
         output_bucket.create()
@@ -128,7 +133,10 @@ def test_with_s3():
         expected = SPINE_DATA.decode("utf-8")
         actual = _read_s3_csv_file(s3, output_bucket_name, output_path)
 
+        actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
+
         assert actual == expected
+        assert actual_s3_metadata == expected_metadata
 
     finally:
         fake_splunk.stop()

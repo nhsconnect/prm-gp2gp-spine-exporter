@@ -36,13 +36,19 @@ def main():
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
     time_calculator = TimeCalculator()
-    earliest_time = time_calculator.get_yesterday_midnight_unix_timestamp()
-    latest_time = time_calculator.get_today_midnight_unix_timestamp()
+    yesterday_midnight = time_calculator.get_yesterday_midnight_unix_timestamp()
+    today_midnight = time_calculator.get_today_midnight_unix_timestamp()
+
+    output_metadata = {
+        "search-start-time": str(yesterday_midnight),
+        "search-end-time": str(today_midnight),
+        "build-tag": config.build_tag,
+    }
 
     data = {
         "output_mode": "csv",
-        "earliest_time": earliest_time,
-        "latest_time": latest_time,
+        "earliest_time": yesterday_midnight,
+        "latest_time": today_midnight,
         "search": """search index=\"spine2vfmmonitor\" service=\"gp2gp\" logReference=\"MPS0053d\"
         | table _time, conversationID, GUID, interactionID, messageSender,
         messageRecipient, messageRef, jdiEvent, toSystem, fromSystem""",
@@ -63,6 +69,7 @@ def main():
     s3_manager.write_csv(
         data=BytesIO(api_response_content),
         s3_key=f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv",
+        metadata=output_metadata,
     )
 
 
