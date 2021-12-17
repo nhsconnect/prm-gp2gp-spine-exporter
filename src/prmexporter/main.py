@@ -36,12 +36,12 @@ def main():
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
     time_calculator = TimeCalculator()
-    yesterday_midnight = time_calculator.get_yesterday_midnight_unix_timestamp()
-    today_midnight = time_calculator.get_today_midnight_unix_timestamp()
+    yesterday_midnight = time_calculator.get_yesterday_midnight_datetime_string()
+    today_midnight = time_calculator.get_today_midnight_datetime_string()
 
     output_metadata = {
-        "search-start-time": str(yesterday_midnight),
-        "search-end-time": str(today_midnight),
+        "search-start-time": yesterday_midnight,
+        "search-end-time": today_midnight,
         "build-tag": config.build_tag,
     }
 

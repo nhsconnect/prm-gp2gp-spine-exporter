@@ -9,9 +9,9 @@ from prmexporter.io.time_calculator import TimeCalculator
 def test_returns_today_midnight():
     time_calculator = TimeCalculator()
 
-    actual_today_midnight = time_calculator.get_today_midnight_unix_timestamp()
+    actual_today_midnight = time_calculator.get_today_midnight_datetime_string()
 
-    expected_today_midnight = 1636761600
+    expected_today_midnight = "2021/11/13:00:00:00"
 
     assert actual_today_midnight == expected_today_midnight
 
@@ -20,9 +20,9 @@ def test_returns_today_midnight():
 def test_returns_yesterday_midnight():
     time_calculator = TimeCalculator()
 
-    actual_yesterday_midnight = time_calculator.get_yesterday_midnight_unix_timestamp()
+    actual_yesterday_midnight = time_calculator.get_yesterday_midnight_datetime_string()
 
-    expected_yesterday_midnight = 1636675200
+    expected_yesterday_midnight = "2021/11/12:00:00:00"
 
     assert actual_yesterday_midnight == expected_yesterday_midnight
 
@@ -31,9 +31,9 @@ def test_returns_yesterday_midnight():
 def test_returns_today_midnight_when_at_midnight():
     time_calculator = TimeCalculator()
 
-    actual_today_midnight = time_calculator.get_today_midnight_unix_timestamp()
+    actual_today_midnight = time_calculator.get_today_midnight_datetime_string()
 
-    expected_today_midnight = 1636761600
+    expected_today_midnight = "2021/11/13:00:00:00"
 
     assert actual_today_midnight == expected_today_midnight
 
@@ -42,9 +42,9 @@ def test_returns_today_midnight_when_at_midnight():
 def test_returns_yesterday_midnight_when_changing_years():
     time_calculator = TimeCalculator()
 
-    actual_yesterday_midnight = time_calculator.get_yesterday_midnight_unix_timestamp()
+    actual_yesterday_midnight = time_calculator.get_yesterday_midnight_datetime_string()
 
-    expected_yesterday_midnight = 1609372800
+    expected_yesterday_midnight = "2020/12/31:00:00:00"
 
     assert actual_yesterday_midnight == expected_yesterday_midnight
 

@@ -1,11 +1,8 @@
-import time
-from datetime import date, datetime
-from datetime import time as datetime_time
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 
 
-def _to_unix_timestamp(a_datetime):
-    return time.mktime(a_datetime.timetuple())
+def _to_datetime_string(a_datetime):
+    return a_datetime.strftime("%Y/%m/%d:%H:%M:%S")
 
 
 class TimeCalculator:
@@ -15,16 +12,16 @@ class TimeCalculator:
         self._yesterday_midnight = self._get_yesterday_midnight()
 
     def _get_today_midnight(self):
-        return datetime.combine(self._today, datetime_time.min)
+        return datetime.combine(self._today, time.min)
 
     def _get_yesterday_midnight(self):
         return self._today_midnight - timedelta(days=1)
 
-    def get_today_midnight_unix_timestamp(self):
-        return _to_unix_timestamp(self._today_midnight)
+    def get_today_midnight_datetime_string(self):
+        return _to_datetime_string(self._today_midnight)
 
-    def get_yesterday_midnight_unix_timestamp(self):
-        return _to_unix_timestamp(self._yesterday_midnight)
+    def get_yesterday_midnight_datetime_string(self):
+        return _to_datetime_string(self._yesterday_midnight)
 
     def get_year(self):
         return self._yesterday_midnight.year
