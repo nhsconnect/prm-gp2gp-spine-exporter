@@ -11,7 +11,7 @@ def test_returns_today_midnight():
 
     actual_today_midnight = time_calculator.get_today_midnight_datetime_string()
 
-    expected_today_midnight = "2021/11/13:00:00:00"
+    expected_today_midnight = "2021-11-13T00:00:00"
 
     assert actual_today_midnight == expected_today_midnight
 
@@ -22,7 +22,7 @@ def test_returns_yesterday_midnight():
 
     actual_yesterday_midnight = time_calculator.get_yesterday_midnight_datetime_string()
 
-    expected_yesterday_midnight = "2021/11/12:00:00:00"
+    expected_yesterday_midnight = "2021-11-12T00:00:00"
 
     assert actual_yesterday_midnight == expected_yesterday_midnight
 
@@ -33,7 +33,7 @@ def test_returns_today_midnight_when_at_midnight():
 
     actual_today_midnight = time_calculator.get_today_midnight_datetime_string()
 
-    expected_today_midnight = "2021/11/13:00:00:00"
+    expected_today_midnight = "2021-11-13T00:00:00"
 
     assert actual_today_midnight == expected_today_midnight
 
@@ -44,7 +44,7 @@ def test_returns_yesterday_midnight_when_changing_years():
 
     actual_yesterday_midnight = time_calculator.get_yesterday_midnight_datetime_string()
 
-    expected_yesterday_midnight = "2020/12/31:00:00:00"
+    expected_yesterday_midnight = "2020-12-31T00:00:00"
 
     assert actual_yesterday_midnight == expected_yesterday_midnight
 

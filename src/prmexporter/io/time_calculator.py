@@ -2,7 +2,7 @@ from datetime import date, datetime, time, timedelta
 
 
 def _to_datetime_string(a_datetime):
-    return a_datetime.strftime("%Y/%m/%d:%H:%M:%S")
+    return a_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
 
 class TimeCalculator:

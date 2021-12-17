@@ -116,8 +116,8 @@ def test_with_s3():
         fake_splunk.start()
 
         expected_metadata = {
-            "search-start-time": "2021/11/12:00:00:00",
-            "search-end-time": "2021/11/13:00:00:00",
+            "search-start-time": "2021-11-12T00:00:00",
+            "search-end-time": "2021-11-13T00:00:00",
             "build-tag": "61ad1e1c",
         }
 
