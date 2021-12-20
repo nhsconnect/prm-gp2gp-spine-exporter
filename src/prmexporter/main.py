@@ -55,7 +55,7 @@ def main():
     }
 
     http_client = HttpClient(client=requests)
-    api_response_content = http_client.fetch_data(
+    api_response_content = http_client.make_request(
         url=config.splunk_url, auth_token=splunk_api_token, request_body=data
     )
 
