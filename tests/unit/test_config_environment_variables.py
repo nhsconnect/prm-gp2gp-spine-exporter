@@ -1,6 +1,11 @@
 import pytest
 
-from prmexporter.config import MissingEnvironmentVariable, SpineExporterConfig
+from prmexporter.config import (
+    EnvConfig,
+    InvalidEnvironmentVariableValue,
+    MissingEnvironmentVariable,
+    SpineExporterConfig,
+)
 
 
 def test_reads_from_environment_variables():
@@ -10,6 +15,7 @@ def test_reads_from_environment_variables():
         "OUTPUT_SPINE_DATA_BUCKET": "output-spine-data-bucket",
         "BUILD_TAG": "61ad1e1c",
         "AWS_ENDPOINT_URL": "https://an.endpoint:3000",
+        "SEARCH_NUMBER_OF_DAYS": "4",
     }
 
     expected_config = SpineExporterConfig(
@@ -18,6 +24,7 @@ def test_reads_from_environment_variables():
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
         aws_endpoint_url="https://an.endpoint:3000",
+        search_number_of_days=4,
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
@@ -48,8 +55,20 @@ def test_reads_from_environment_variables_when_optional_fields_are_not_set():
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
         aws_endpoint_url=None,
+        search_number_of_days=1,
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
 
     assert actual_config == expected_config
+
+
+def test_read_optional_int_throws_exception_given_invalid_string():
+    env = EnvConfig({"OPTIONAL_INT_CONFIG": "one"})
+
+    with pytest.raises(InvalidEnvironmentVariableValue) as e:
+        env.read_optional_int(name="OPTIONAL_INT_CONFIG", default=0)
+    assert (
+        str(e.value)
+        == "Expected environment variable OPTIONAL_INT_CONFIG value is invalid, exiting..."
+    )

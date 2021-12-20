@@ -95,11 +95,13 @@ This will format the code and the imports.
 
 Configuration is achieved via the following environment variables:
 
-| Environment variable        | Description                                                  | 
-|-----------------------------|--------------------------------------------------------------|
-| SPLUNK_API_TOKEN_PARAM_NAME | AWS Parameter store name which contains the Splunk API token |
-| SPLUNK_URL                  | URL of the Splunk API                                        |
-| OUTPUT_SPINE_DATA_BUCKET    | Output S3 Bucket to write the Spine logs                     |
+| Environment variable        | Description                                                           | 
+|-----------------------------|-----------------------------------------------------------------------|
+| SPLUNK_URL                  | URL of the Splunk API                                                 |
+| SPLUNK_API_TOKEN_PARAM_NAME | AWS Parameter store name which contains the Splunk API token          |
+| OUTPUT_SPINE_DATA_BUCKET    | Output S3 Bucket to write the Spine logs                              |
+| BUILD_TAG                   | Unique identifier for version of code build tag (e.g. short git hash) |
+| SEARCH_NUMBER_OF_DAYS       | Number of days of search results from Splunk API                      |
 
 
 ### Troubleshooting
