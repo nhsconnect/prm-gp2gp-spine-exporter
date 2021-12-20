@@ -52,8 +52,8 @@ class SpineExporterConfig:
     splunk_api_token_param_name: str
     output_spine_data_bucket: str
     build_tag: str
+    search_number_of_days: int
     aws_endpoint_url: Optional[str]
-    search_number_of_days: Optional[int]
 
     @classmethod
     def from_environment_variables(cls, env_vars):

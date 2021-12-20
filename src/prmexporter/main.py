@@ -9,8 +9,8 @@ from prmexporter.config import SpineExporterConfig
 from prmexporter.io.http_client import HttpClient
 from prmexporter.io.json_formatter import JsonFormatter
 from prmexporter.io.s3 import S3DataManager
+from prmexporter.io.search_window import SearchWindow
 from prmexporter.io.secret_manager import SsmSecretManager
-from prmexporter.io.time_calculator import TimeCalculator
 
 logger = logging.getLogger("prmexporter")
 
@@ -60,7 +60,7 @@ class SpineExporterPipeline:
         )
 
     @staticmethod
-    def _get_s3_key(time_calculator: TimeCalculator) -> str:
+    def _get_s3_key(time_calculator: SearchWindow) -> str:
         year = time_calculator.get_year()
         month = time_calculator.get_month()
         day = time_calculator.get_day()
@@ -80,19 +80,21 @@ class SpineExporterPipeline:
         )
 
     def run(self):
-        time_calculator = TimeCalculator()
-        yesterday_midnight = time_calculator.get_yesterday_midnight_datetime_string()
-        today_midnight = time_calculator.get_today_midnight_datetime_string()
+        time_calculator = SearchWindow.prior_to_now(
+            number_of_days=self._config.search_number_of_days
+        )
+        search_start_time = time_calculator.get_start_datetime_string()
+        search_end_time = time_calculator.get_end_datetime_string()
 
         spine_data = self._fetch_spine_data(
-            search_start_time=yesterday_midnight, search_end_time=today_midnight
+            search_start_time=search_start_time, search_end_time=search_end_time
         )
         s3_key = self._get_s3_key(time_calculator)
         self._write_spine_data_to_s3(
             spine_data=spine_data,
             s3_key=s3_key,
-            search_start_time=yesterday_midnight,
-            search_end_time=today_midnight,
+            search_start_time=search_start_time,
+            search_end_time=search_end_time,
         )
 
 
