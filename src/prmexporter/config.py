@@ -1,5 +1,5 @@
 import logging
-from dataclasses import MISSING, dataclass, fields
+from dataclasses import dataclass
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -9,16 +9,30 @@ class MissingEnvironmentVariable(Exception):
     pass
 
 
-def _read_env(field, env_vars):
-    env_var = field.name.upper()
-    if env_var in env_vars:
-        return env_vars[env_var]
-    elif field.default != MISSING:
-        return field.default
-    else:
-        raise MissingEnvironmentVariable(
-            f"Expected environment variable {env_var} was not set, exiting..."
-        )
+class EnvConfig:
+    def __init__(self, env_vars):
+        self._env_vars = env_vars
+
+    def _read_env(self, name: str, optional: bool, converter=None, default=None):
+        try:
+            env_var = self._env_vars[name]
+            if converter:
+                return converter(env_var)
+            else:
+                return env_var
+        except KeyError:
+            if optional:
+                return default
+            else:
+                raise MissingEnvironmentVariable(
+                    f"Expected environment variable {name} was not set, exiting..."
+                )
+
+    def read_str(self, name: str) -> str:
+        return self._read_env(name, optional=False)
+
+    def read_optional_str(self, name: str) -> Optional[str]:
+        return self._read_env(name, optional=True)
 
 
 @dataclass
@@ -31,4 +45,11 @@ class SpineExporterConfig:
 
     @classmethod
     def from_environment_variables(cls, env_vars):
-        return cls(**{field.name: _read_env(field, env_vars) for field in fields(cls)})
+        env = EnvConfig(env_vars)
+        return cls(
+            splunk_url=env.read_str("SPLUNK_URL"),
+            splunk_api_token_param_name=env.read_str("SPLUNK_API_TOKEN_PARAM_NAME"),
+            output_spine_data_bucket=env.read_str("OUTPUT_SPINE_DATA_BUCKET"),
+            build_tag=env.read_str("BUILD_TAG"),
+            aws_endpoint_url=env.read_optional_str("AWS_ENDPOINT_URL"),
+        )
