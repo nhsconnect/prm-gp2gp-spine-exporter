@@ -101,7 +101,7 @@ def test_with_s3():
     environ["SPLUNK_URL"] = FAKE_SPLUNK_URL
     environ["OUTPUT_SPINE_DATA_BUCKET"] = output_bucket_name
     environ["SPLUNK_API_TOKEN_PARAM_NAME"] = api_token_param_name
-    environ["S3_ENDPOINT_URL"] = FAKE_AWS_URL
+    environ["AWS_ENDPOINT_URL"] = FAKE_AWS_URL
     environ["BUILD_TAG"] = "61ad1e1c"
 
     year = 2021

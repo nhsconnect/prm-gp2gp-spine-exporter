@@ -9,7 +9,7 @@ def test_reads_from_environment_variables():
         "SPLUNK_API_TOKEN_PARAM_NAME": "/param/name/api-token",
         "OUTPUT_SPINE_DATA_BUCKET": "output-spine-data-bucket",
         "BUILD_TAG": "61ad1e1c",
-        "S3_ENDPOINT_URL": "https://an.endpoint:3000",
+        "AWS_ENDPOINT_URL": "https://an.endpoint:3000",
     }
 
     expected_config = SpineExporterConfig(
@@ -17,7 +17,7 @@ def test_reads_from_environment_variables():
         splunk_api_token_param_name="/param/name/api-token",
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
-        s3_endpoint_url="https://an.endpoint:3000",
+        aws_endpoint_url="https://an.endpoint:3000",
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
@@ -47,7 +47,7 @@ def test_reads_from_environment_variables_when_optional_fields_are_not_set():
         splunk_api_token_param_name="/param/name/api-token",
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
-        s3_endpoint_url=None,
+        aws_endpoint_url=None,
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)

@@ -31,7 +31,7 @@ def main():
 
     config = SpineExporterConfig.from_environment_variables(environ)
 
-    ssm = boto3.client("ssm", endpoint_url=config.s3_endpoint_url)
+    ssm = boto3.client("ssm", endpoint_url=config.aws_endpoint_url)
     secret_manager = SsmSecretManager(ssm)
     splunk_api_token = secret_manager.get_secret(config.splunk_api_token_param_name)
 
@@ -59,7 +59,7 @@ def main():
         url=config.splunk_url, auth_token=splunk_api_token, request_body=data
     )
 
-    s3_client = boto3.resource("s3", endpoint_url=config.s3_endpoint_url)
+    s3_client = boto3.resource("s3", endpoint_url=config.aws_endpoint_url)
     s3_manager = S3DataManager(client=s3_client, bucket_name=config.output_spine_data_bucket)
 
     year = time_calculator.get_year()

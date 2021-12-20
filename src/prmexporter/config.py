@@ -27,7 +27,7 @@ class SpineExporterConfig:
     splunk_api_token_param_name: str
     output_spine_data_bucket: str
     build_tag: str
-    s3_endpoint_url: Optional[str] = None
+    aws_endpoint_url: Optional[str] = None
 
     @classmethod
     def from_environment_variables(cls, env_vars):
