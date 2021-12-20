@@ -78,7 +78,7 @@ def _read_s3_metadata(bucket, key):
     return bucket.Object(key).get()["Metadata"]
 
 
-@freeze_time(datetime(year=2021, month=11, day=13, hour=2, second=0))
+@freeze_time(datetime(year=2021, month=2, day=7, hour=2, second=0))
 def test_with_s3():
     _disable_werkzeug_logging()
 
@@ -104,9 +104,9 @@ def test_with_s3():
     environ["AWS_ENDPOINT_URL"] = FAKE_AWS_URL
     environ["BUILD_TAG"] = "61ad1e1c"
 
-    year = 2021
-    month = 11
-    day = 12
+    year = "2021"
+    month = "02"
+    day = "06"
 
     fake_aws = _build_fake_aws(FAKE_AWS_HOST, FAKE_AWS_PORT)
     fake_splunk = _build_fake_splunk(FAKE_SPLUNK_HOST, FAKE_SPLUNK_PORT)
@@ -116,8 +116,8 @@ def test_with_s3():
         fake_splunk.start()
 
         expected_metadata = {
-            "search-start-time": "2021-11-12T00:00:00",
-            "search-end-time": "2021-11-13T00:00:00",
+            "search-start-time": "2021-02-06T00:00:00",
+            "search-end-time": "2021-02-07T00:00:00",
             "build-tag": "61ad1e1c",
         }
 

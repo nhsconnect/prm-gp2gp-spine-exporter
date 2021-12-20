@@ -60,10 +60,11 @@ class SpineExporterPipeline:
         )
 
     @staticmethod
-    def _get_s3_key(time_calculator: SearchWindow) -> str:
-        year = time_calculator.get_year()
-        month = time_calculator.get_month()
-        day = time_calculator.get_day()
+    def _get_s3_key(search_window: SearchWindow) -> str:
+        start_datetime = search_window.get_start_datetime()
+        year = str(start_datetime.year)
+        month = str(start_datetime.month).zfill(2)
+        day = str(start_datetime.day).zfill(2)
         return f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv"
 
     def _write_spine_data_to_s3(
@@ -80,16 +81,14 @@ class SpineExporterPipeline:
         )
 
     def run(self):
-        time_calculator = SearchWindow.prior_to_now(
-            number_of_days=self._config.search_number_of_days
-        )
-        search_start_time = time_calculator.get_start_datetime_string()
-        search_end_time = time_calculator.get_end_datetime_string()
+        search_window = SearchWindow.prior_to_now(number_of_days=self._config.search_number_of_days)
+        search_start_time = search_window.get_start_datetime_string()
+        search_end_time = search_window.get_end_datetime_string()
 
         spine_data = self._fetch_spine_data(
             search_start_time=search_start_time, search_end_time=search_end_time
         )
-        s3_key = self._get_s3_key(time_calculator)
+        s3_key = self._get_s3_key(search_window)
         self._write_spine_data_to_s3(
             spine_data=spine_data,
             s3_key=s3_key,

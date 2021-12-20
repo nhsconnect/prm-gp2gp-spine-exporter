@@ -24,11 +24,5 @@ class SearchWindow:
     def get_start_datetime_string(self) -> str:
         return self._to_datetime_string(self._start_datetime)
 
-    def get_year(self) -> int:
-        return self._start_datetime.year
-
-    def get_month(self) -> int:
-        return self._start_datetime.month
-
-    def get_day(self) -> int:
-        return self._start_datetime.day
+    def get_start_datetime(self) -> datetime:
+        return self._start_datetime
