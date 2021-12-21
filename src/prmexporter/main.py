@@ -64,7 +64,7 @@ class SpineExporterPipeline:
         year = str(start_datetime.year)
         month = str(start_datetime.month).zfill(2)
         day = str(start_datetime.day).zfill(2)
-        return f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv"
+        return f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv.gz"
 
     def _write_spine_data_to_s3(
         self, spine_data: bytes, s3_key: str, search_start_time: str, search_end_time: str

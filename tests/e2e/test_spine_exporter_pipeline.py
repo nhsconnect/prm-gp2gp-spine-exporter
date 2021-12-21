@@ -125,7 +125,7 @@ def test_with_s3():
         output_bucket = s3.Bucket(output_bucket_name)
         output_bucket.create()
 
-        output_path = f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv"
+        output_path = f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv.gz"
 
         _populate_ssm_parameter(api_token_param_name, "abc")
 

@@ -12,7 +12,7 @@ SOME_METADATA = {"metadata_field": "metadata_value"}
 def test_writes_csv_to_s3():
     conn = boto3.resource("s3", region_name=MOTO_MOCK_REGION)
     bucket_name = "test_bucket"
-    s3_key = "v2/fruits.csv"
+    s3_key = "v2/fruits.csv.gz"
     bucket = conn.create_bucket(Bucket=bucket_name)
     s3_manager = S3DataManager(client=conn, bucket_name=bucket_name)
 
@@ -35,7 +35,7 @@ def test_writes_csv_to_s3():
 def test_writes_metadata():
     conn = boto3.resource("s3", region_name=MOTO_MOCK_REGION)
     bucket_name = "test_bucket"
-    s3_key = "fruits.csv"
+    s3_key = "fruits.csv.gz"
     bucket = conn.create_bucket(Bucket=bucket_name)
     data = build_csv_bytes(["abc"], ["def"])
     s3_manager = S3DataManager(client=conn, bucket_name=bucket_name)
