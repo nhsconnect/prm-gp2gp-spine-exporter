@@ -1,17 +1,23 @@
-from io import BytesIO
+import csv
+import gzip
 from typing import List
 
 
-def build_csv_contents(header: List, rows: List) -> str:
+def build_csv_bytes(header: List, rows: List) -> bytes:
     def build_line(values):
         return ",".join(values)
 
     header_line = build_line(header)
     row_lines = [build_line(row) for row in rows]
 
-    return "\n".join([header_line] + row_lines)
+    return str.encode("\n".join([header_line] + row_lines))
 
 
-def build_bytes_io_contents(data: str) -> BytesIO:
-    bytes_data = str.encode(data)
-    return BytesIO(bytes_data)
+def open_gzip(body: bytes) -> str:
+    def build_line(values):
+        return ",".join(values)
+
+    with gzip.open(body, mode="rt") as f:
+        input_csv = csv.reader(f)
+        row_lines = [build_line(row) for row in input_csv]
+        return "\n".join(row_lines)

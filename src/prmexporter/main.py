@@ -1,5 +1,4 @@
 import logging
-from io import BytesIO
 from os import environ
 
 import boto3
@@ -76,8 +75,8 @@ class SpineExporterPipeline:
             "build-tag": self._config.build_tag,
         }
 
-        self._s3_data_manager.write_csv(
-            data=BytesIO(spine_data), s3_key=s3_key, metadata=output_metadata
+        self._s3_data_manager.write_gzip_csv(
+            data=spine_data, s3_key=s3_key, metadata=output_metadata
         )
 
     def run(self):

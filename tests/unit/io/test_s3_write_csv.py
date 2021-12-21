@@ -2,7 +2,7 @@ import boto3
 from moto import mock_s3
 
 from prmexporter.io.s3 import S3DataManager
-from tests.builders.file import build_bytes_io_contents, build_csv_contents
+from tests.builders.file import build_csv_bytes, open_gzip
 
 MOTO_MOCK_REGION = "us-east-1"
 SOME_METADATA = {"metadata_field": "metadata_value"}
@@ -16,17 +16,17 @@ def test_writes_csv_to_s3():
     bucket = conn.create_bucket(Bucket=bucket_name)
     s3_manager = S3DataManager(client=conn, bucket_name=bucket_name)
 
-    csv_data = build_csv_contents(
+    csv_data = build_csv_bytes(
         header=["header1", "header2"],
         rows=[["row1-col1", "row1-col2"], ["row2-col1", "row2-col2"]],
     )
-    data = build_bytes_io_contents(csv_data)
 
-    expected = b"header1,header2\nrow1-col1,row1-col2\nrow2-col1,row2-col2"
+    expected = "header1,header2\nrow1-col1,row1-col2\nrow2-col1,row2-col2"
 
-    s3_manager.write_csv(data=data, s3_key=s3_key, metadata=SOME_METADATA)
+    s3_manager.write_gzip_csv(data=csv_data, s3_key=s3_key, metadata=SOME_METADATA)
 
-    actual = bucket.Object(s3_key).get()["Body"].read()
+    body = bucket.Object(s3_key).get()["Body"]
+    actual = open_gzip(body)
 
     assert actual == expected
 
@@ -37,7 +37,7 @@ def test_writes_metadata():
     bucket_name = "test_bucket"
     s3_key = "fruits.csv"
     bucket = conn.create_bucket(Bucket=bucket_name)
-    data = build_bytes_io_contents("abc")
+    data = build_csv_bytes(["abc"], ["def"])
     s3_manager = S3DataManager(client=conn, bucket_name=bucket_name)
 
     metadata = {
@@ -45,7 +45,7 @@ def test_writes_metadata():
         "second_metadata_field": "metadata_field_second_value",
     }
 
-    s3_manager.write_csv(data=data, s3_key=s3_key, metadata=metadata)
+    s3_manager.write_gzip_csv(data=data, s3_key=s3_key, metadata=metadata)
 
     actual_metadata = bucket.Object(s3_key).get()["Metadata"]
 

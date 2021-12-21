@@ -11,6 +11,7 @@ from werkzeug import Request, Response
 from werkzeug.serving import make_server
 
 from prmexporter.main import VERSION, main
+from tests.builders.file import open_gzip
 
 FAKE_SPLUNK_HOST = "127.0.0.1"
 FAKE_SPLUNK_PORT = 9000
@@ -63,10 +64,10 @@ def _disable_werkzeug_logging():
     log.setLevel(logging.ERROR)
 
 
-def _read_s3_csv_file(s3_client, bucket_name, key):
+def _read_s3_gzip_csv_file(s3_client, bucket_name, key):
     s3_object = s3_client.Object(bucket_name, key)
-    response = s3_object.get()
-    return response["Body"].read().decode("utf-8")
+    body = s3_object.get()["Body"]
+    return open_gzip(body)
 
 
 def _populate_ssm_parameter(name, value):
@@ -131,7 +132,7 @@ def test_with_s3():
         main()
 
         expected = SPINE_DATA.decode("utf-8")
-        actual = _read_s3_csv_file(s3, output_bucket_name, output_path)
+        actual = _read_s3_gzip_csv_file(s3, output_bucket_name, output_path)
 
         actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
 
