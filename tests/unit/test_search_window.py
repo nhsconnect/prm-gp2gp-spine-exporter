@@ -2,7 +2,7 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from prmexporter.io.search_window import SearchWindow
+from prmexporter.search_window import SearchWindow
 
 
 @freeze_time(datetime(year=2021, month=11, day=13, hour=2, minute=0, second=0))

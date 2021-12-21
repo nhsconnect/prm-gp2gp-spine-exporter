@@ -8,7 +8,7 @@ from prmexporter.config import SpineExporterConfig
 from prmexporter.io.http_client import HttpClient
 from prmexporter.io.json_formatter import JsonFormatter
 from prmexporter.io.s3 import S3DataManager
-from prmexporter.io.search_window import SearchWindow
+from prmexporter.search_window import SearchWindow
 from prmexporter.io.secret_manager import SsmSecretManager
 
 logger = logging.getLogger("prmexporter")
