@@ -1,5 +1,3 @@
-import logging
-
 import boto3
 import requests
 
@@ -67,10 +65,6 @@ class SpineExporter:
         )
 
     def run(self):
-        logging.info(
-            f"ENV VAR: EVENT_BRIDGE_START_DATETIME={self._config.event_bridge_start_datetime}"
-        )
-
         search_window = SearchWindow.prior_to_now(number_of_days=self._config.search_number_of_days)
         search_start_time = search_window.get_start_datetime_string()
         search_end_time = search_window.get_end_datetime_string()
