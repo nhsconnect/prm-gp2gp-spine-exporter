@@ -15,6 +15,7 @@ def test_reads_from_environment_variables():
         "OUTPUT_SPINE_DATA_BUCKET": "output-spine-data-bucket",
         "BUILD_TAG": "61ad1e1c",
         "AWS_ENDPOINT_URL": "https://an.endpoint:3000",
+        "EVENT_BRIDGE_START_DATETIME": "2021-01-01T02:00:00",
         "SEARCH_NUMBER_OF_DAYS": "4",
     }
 
@@ -24,6 +25,7 @@ def test_reads_from_environment_variables():
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
         aws_endpoint_url="https://an.endpoint:3000",
+        event_bridge_start_datetime="2021-01-01T02:00:00",
         search_number_of_days=4,
     )
 
@@ -55,6 +57,7 @@ def test_reads_from_environment_variables_when_optional_fields_are_not_set():
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
         aws_endpoint_url=None,
+        event_bridge_start_datetime=None,
         search_number_of_days=1,
     )
 

@@ -53,6 +53,7 @@ class SpineExporterConfig:
     output_spine_data_bucket: str
     build_tag: str
     search_number_of_days: int
+    event_bridge_start_datetime: Optional[str]
     aws_endpoint_url: Optional[str]
 
     @classmethod
@@ -64,5 +65,6 @@ class SpineExporterConfig:
             output_spine_data_bucket=env.read_str("OUTPUT_SPINE_DATA_BUCKET"),
             build_tag=env.read_str("BUILD_TAG"),
             aws_endpoint_url=env.read_optional_str("AWS_ENDPOINT_URL"),
+            event_bridge_start_datetime=env.read_optional_str("EVENT_BRIDGE_START_DATETIME"),
             search_number_of_days=env.read_optional_int("SEARCH_NUMBER_OF_DAYS", default=1),
         )
