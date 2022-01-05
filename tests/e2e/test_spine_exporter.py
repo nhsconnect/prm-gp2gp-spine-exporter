@@ -10,7 +10,8 @@ from moto.server import DomainDispatcherApplication, create_backend_app
 from werkzeug import Request, Response
 from werkzeug.serving import make_server
 
-from prmexporter.main import VERSION, main
+from prmexporter.main import main
+from prmexporter.spine_exporter import VERSION
 from tests.builders.file import open_gzip
 
 FAKE_SPLUNK_HOST = "127.0.0.1"
