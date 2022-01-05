@@ -70,3 +70,16 @@ def test_returns_start_datetime_from_param():
     expected_start_datetime = start_datetime_input
 
     assert actual_start_datetime == expected_start_datetime
+
+
+@freeze_time(datetime(year=2021, month=1, day=1, hour=2, minute=4, second=45))
+def test_returns_end_datetime_of_start_datetime_plus_one_day():
+    start_datetime_input = datetime(year=2020, month=6, day=6, hour=6, minute=6, second=6)
+    end_datetime = datetime(year=2020, month=6, day=7, hour=6, minute=6, second=6)
+    search_window = SearchWindow.calculate_start_and_end_time(start_datetime=start_datetime_input)
+
+    actual_end_datetime = search_window.get_end_datetime()
+
+    expected_end_datetime = end_datetime
+
+    assert actual_end_datetime == expected_end_datetime
