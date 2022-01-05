@@ -65,7 +65,9 @@ class SpineExporter:
         )
 
     def run(self):
-        search_window = SearchWindow.prior_to_now(number_of_days=self._config.search_number_of_days)
+        search_window = SearchWindow.calculate_start_and_end_time(
+            start_datetime=self._config.start_datetime
+        )
         search_start_time = search_window.get_start_datetime_string()
         search_end_time = search_window.get_end_datetime_string()
 

@@ -1,6 +1,9 @@
 import logging
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
+
+from dateutil.parser import isoparse
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +48,9 @@ class EnvConfig:
     def read_optional_int(self, name: str, default: int) -> int:
         return self._read_env(name, optional=True, converter=int, default=default)
 
+    def read_optional_datetime(self, name) -> datetime:
+        return self._read_env(name, optional=True, converter=isoparse)
+
 
 @dataclass
 class SpineExporterConfig:
@@ -53,7 +59,7 @@ class SpineExporterConfig:
     output_spine_data_bucket: str
     build_tag: str
     search_number_of_days: int
-    start_datetime: Optional[str]
+    start_datetime: Optional[datetime]
     aws_endpoint_url: Optional[str]
 
     @classmethod
@@ -65,6 +71,6 @@ class SpineExporterConfig:
             output_spine_data_bucket=env.read_str("OUTPUT_SPINE_DATA_BUCKET"),
             build_tag=env.read_str("BUILD_TAG"),
             aws_endpoint_url=env.read_optional_str("AWS_ENDPOINT_URL"),
-            start_datetime=env.read_optional_str("START_DATETIME"),
+            start_datetime=env.read_optional_datetime("START_DATETIME"),
             search_number_of_days=env.read_optional_int("SEARCH_NUMBER_OF_DAYS", default=1),
         )

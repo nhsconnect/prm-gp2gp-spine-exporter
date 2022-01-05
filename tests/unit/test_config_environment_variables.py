@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from prmexporter.config import (
@@ -25,7 +27,7 @@ def test_reads_from_environment_variables():
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
         aws_endpoint_url="https://an.endpoint:3000",
-        start_datetime="2021-01-01T02:00:00",
+        start_datetime=datetime(year=2021, month=1, day=1, hour=2, minute=0, second=0),
         search_number_of_days=4,
     )
 

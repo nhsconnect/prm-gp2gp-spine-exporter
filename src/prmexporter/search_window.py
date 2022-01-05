@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+from typing import Optional
 
 
 class SearchWindow:
@@ -7,12 +8,14 @@ class SearchWindow:
         self._end_datetime = end_datetime
 
     @classmethod
-    def prior_to_now(cls, number_of_days: int):
-        today = date.today()
-        end_datetime = datetime.combine(today, time.min)
-        start_datetime = end_datetime - timedelta(days=number_of_days)
-
-        return cls(start_datetime, end_datetime)
+    def calculate_start_and_end_time(cls, start_datetime: Optional[datetime]):
+        if start_datetime:
+            return cls(start_datetime, None)
+        else:
+            today = date.today()
+            end_datetime = datetime.combine(today, time.min)
+            calculated_start_datetime = end_datetime - timedelta(days=1)
+            return cls(calculated_start_datetime, end_datetime)
 
     @staticmethod
     def _to_datetime_string(a_datetime: datetime) -> str:
