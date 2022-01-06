@@ -7,11 +7,11 @@ import boto3
 from botocore.config import Config
 from freezegun import freeze_time
 from moto.server import DomainDispatcherApplication, create_backend_app
+from prmexporter.main import main
+from prmexporter.spine_exporter import VERSION
 from werkzeug import Request, Response
 from werkzeug.serving import make_server
 
-from prmexporter.main import main
-from prmexporter.spine_exporter import VERSION
 from tests.builders.file import open_gzip
 
 FAKE_SPLUNK_HOST = "127.0.0.1"
@@ -24,6 +24,9 @@ FAKE_AWS_URL = f"http://{FAKE_AWS_HOST}:{FAKE_AWS_PORT}"
 FAKE_S3_ACCESS_KEY = "testing"
 FAKE_S3_SECRET_KEY = "testing"
 FAKE_S3_REGION = "us-west-1"
+
+OUTPUT_BUCKET_NAME = "prm-gp2gp-spine-data"
+API_TOKEN_PARAM_NAME = "test/splunk/api-token"
 
 SPINE_DATA = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
     2019-12-01T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
@@ -73,7 +76,7 @@ def _read_s3_gzip_csv_file(s3_client, bucket_name, key):
 
 def _populate_ssm_parameter(name, value):
     ssm = boto3.client(service_name="ssm", endpoint_url=FAKE_AWS_URL)
-    ssm.put_parameter(Name=name, Value=value, Type="SecureString")
+    ssm.put_parameter(Name=name, Value=value, Type="SecureString", Overwrite=True)
 
 
 def _read_s3_metadata(bucket, key):
@@ -82,8 +85,83 @@ def _read_s3_metadata(bucket, key):
 
 @freeze_time(datetime(year=2021, month=2, day=7, hour=2, second=0))
 def test_with_s3():
-    _disable_werkzeug_logging()
+    fake_aws, fake_splunk, s3 = _setup()
 
+    try:
+        fake_aws.start()
+        fake_splunk.start()
+
+        output_bucket = s3.Bucket(OUTPUT_BUCKET_NAME)
+        output_bucket.create()
+
+        year = "2021"
+        month = "02"
+        day = "06"
+        output_path = f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv.gz"
+
+        _populate_ssm_parameter(API_TOKEN_PARAM_NAME, "abc")
+
+        main()
+
+        expected_spine_data = SPINE_DATA.decode("utf-8")
+        actual_spine_data = _read_s3_gzip_csv_file(s3, OUTPUT_BUCKET_NAME, output_path)
+
+        assert actual_spine_data == expected_spine_data
+
+        expected_s3_metadata = {
+            "search-start-time": "2021-02-06T00:00:00",
+            "search-end-time": "2021-02-07T00:00:00",
+            "build-tag": "61ad1e1c",
+        }
+        actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
+        assert actual_s3_metadata == expected_s3_metadata
+
+    finally:
+        fake_splunk.stop()
+        fake_aws.stop()
+
+
+@freeze_time(datetime(year=2021, month=2, day=10, hour=1, second=1))
+def test_with_specified_start_datetime():
+    environ["START_DATETIME"] = "2021-02-06T00:00:00"
+    fake_aws, fake_splunk, s3 = _setup()
+
+    try:
+        fake_aws.start()
+        fake_splunk.start()
+
+        output_bucket = s3.Bucket(OUTPUT_BUCKET_NAME)
+        output_bucket.create()
+
+        year = "2021"
+        month = "02"
+        day = "06"
+        output_path = f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv.gz"
+
+        _populate_ssm_parameter(API_TOKEN_PARAM_NAME, "abc")
+
+        main()
+
+        expected_spine_data = SPINE_DATA.decode("utf-8")
+        actual_spine_data = _read_s3_gzip_csv_file(s3, OUTPUT_BUCKET_NAME, output_path)
+
+        assert actual_spine_data == expected_spine_data
+
+        expected_s3_metadata = {
+            "search-start-time": "2021-02-06T00:00:00",
+            "search-end-time": "2021-02-07T00:00:00",
+            "build-tag": "61ad1e1c",
+        }
+        actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
+        assert actual_s3_metadata == expected_s3_metadata
+
+    finally:
+        fake_splunk.stop()
+        fake_aws.stop()
+
+
+def _setup():
+    _disable_werkzeug_logging()
     s3 = boto3.resource(
         "s3",
         endpoint_url=FAKE_AWS_URL,
@@ -92,54 +170,14 @@ def test_with_s3():
         config=Config(signature_version="s3v4"),
         region_name=FAKE_S3_REGION,
     )
-
-    output_bucket_name = "prm-gp2gp-spine-data"
-    api_token_param_name = "test/splunk/api-token"
-
     environ["AWS_ACCESS_KEY_ID"] = "testing"
     environ["AWS_SECRET_ACCESS_KEY"] = "testing"
     environ["AWS_DEFAULT_REGION"] = "us-west-1"
-
     environ["SPLUNK_URL"] = FAKE_SPLUNK_URL
-    environ["OUTPUT_SPINE_DATA_BUCKET"] = output_bucket_name
-    environ["SPLUNK_API_TOKEN_PARAM_NAME"] = api_token_param_name
+    environ["OUTPUT_SPINE_DATA_BUCKET"] = OUTPUT_BUCKET_NAME
+    environ["SPLUNK_API_TOKEN_PARAM_NAME"] = API_TOKEN_PARAM_NAME
     environ["AWS_ENDPOINT_URL"] = FAKE_AWS_URL
     environ["BUILD_TAG"] = "61ad1e1c"
-
-    year = "2021"
-    month = "02"
-    day = "06"
-
     fake_aws = _build_fake_aws(FAKE_AWS_HOST, FAKE_AWS_PORT)
     fake_splunk = _build_fake_splunk(FAKE_SPLUNK_HOST, FAKE_SPLUNK_PORT)
-
-    try:
-        fake_aws.start()
-        fake_splunk.start()
-
-        expected_metadata = {
-            "search-start-time": "2021-02-06T00:00:00",
-            "search-end-time": "2021-02-07T00:00:00",
-            "build-tag": "61ad1e1c",
-        }
-
-        output_bucket = s3.Bucket(output_bucket_name)
-        output_bucket.create()
-
-        output_path = f"{VERSION}/{year}/{month}/{day}/{year}-{month}-{day}_spine_messages.csv.gz"
-
-        _populate_ssm_parameter(api_token_param_name, "abc")
-
-        main()
-
-        expected = SPINE_DATA.decode("utf-8")
-        actual = _read_s3_gzip_csv_file(s3, output_bucket_name, output_path)
-
-        actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
-
-        assert actual == expected
-        assert actual_s3_metadata == expected_metadata
-
-    finally:
-        fake_splunk.stop()
-        fake_aws.stop()
+    return fake_aws, fake_splunk, s3
