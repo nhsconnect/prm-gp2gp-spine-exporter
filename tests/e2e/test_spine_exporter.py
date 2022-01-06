@@ -7,11 +7,11 @@ import boto3
 from botocore.config import Config
 from freezegun import freeze_time
 from moto.server import DomainDispatcherApplication, create_backend_app
-from prmexporter.main import main
-from prmexporter.spine_exporter import VERSION
 from werkzeug import Request, Response
 from werkzeug.serving import make_server
 
+from prmexporter.main import main
+from prmexporter.spine_exporter import VERSION
 from tests.builders.file import open_gzip
 
 FAKE_SPLUNK_HOST = "127.0.0.1"

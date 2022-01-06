@@ -58,7 +58,6 @@ class SpineExporterConfig:
     splunk_api_token_param_name: str
     output_spine_data_bucket: str
     build_tag: str
-    search_number_of_days: int
     start_datetime: Optional[datetime]
     aws_endpoint_url: Optional[str]
 
@@ -72,5 +71,4 @@ class SpineExporterConfig:
             build_tag=env.read_str("BUILD_TAG"),
             aws_endpoint_url=env.read_optional_str("AWS_ENDPOINT_URL"),
             start_datetime=env.read_optional_datetime("START_DATETIME"),
-            search_number_of_days=env.read_optional_int("SEARCH_NUMBER_OF_DAYS", default=1),
         )

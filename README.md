@@ -101,7 +101,7 @@ Configuration is achieved via the following environment variables:
 | SPLUNK_API_TOKEN_PARAM_NAME | AWS Parameter store name which contains the Splunk API token          |
 | OUTPUT_SPINE_DATA_BUCKET    | Output S3 Bucket to write the Spine logs                              |
 | BUILD_TAG                   | Unique identifier for version of code build tag (e.g. short git hash) |
-| SEARCH_NUMBER_OF_DAYS       | Number of days of search results from Splunk API                      |
+| START_DATETIME              | The start date and time of the search results from Splunk API         |
 
 
 ### Troubleshooting
