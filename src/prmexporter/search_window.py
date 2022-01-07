@@ -13,10 +13,9 @@ class SearchWindow:
             end_datetime = start_datetime + timedelta(days=1)
             return cls(start_datetime, end_datetime)
         else:
-            today = date.today()
-            end_datetime = datetime.combine(today, time.min)
-            calculated_start_datetime = end_datetime - timedelta(days=1)
-            return cls(calculated_start_datetime, end_datetime)
+            today_midnight_datetime = datetime.combine(date.today(), time.min)
+            start_of_yesterday_datetime = today_midnight_datetime - timedelta(days=1)
+            return cls(start_of_yesterday_datetime, today_midnight_datetime)
 
     @staticmethod
     def _to_datetime_string(a_datetime: datetime) -> str:
