@@ -17,7 +17,8 @@ def test_reads_from_environment_variables():
         "OUTPUT_SPINE_DATA_BUCKET": "output-spine-data-bucket",
         "BUILD_TAG": "61ad1e1c",
         "AWS_ENDPOINT_URL": "https://an.endpoint:3000",
-        "START_DATETIME": "2021-01-01T02:00:00",
+        "START_DATETIME": "2021-01-01T00:00:00",
+        "END_DATETIME": "2021-01-02T00:00:00",
     }
 
     expected_config = SpineExporterConfig(
@@ -26,7 +27,8 @@ def test_reads_from_environment_variables():
         output_spine_data_bucket="output-spine-data-bucket",
         build_tag="61ad1e1c",
         aws_endpoint_url="https://an.endpoint:3000",
-        start_datetime=datetime(year=2021, month=1, day=1, hour=2, minute=0, second=0),
+        start_datetime=datetime(year=2021, month=1, day=1, hour=0, minute=0, second=0),
+        end_datetime=datetime(year=2021, month=1, day=2, hour=0, minute=0, second=0),
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)
@@ -58,6 +60,7 @@ def test_reads_from_environment_variables_when_optional_fields_are_not_set():
         build_tag="61ad1e1c",
         aws_endpoint_url=None,
         start_datetime=None,
+        end_datetime=None,
     )
 
     actual_config = SpineExporterConfig.from_environment_variables(environment)

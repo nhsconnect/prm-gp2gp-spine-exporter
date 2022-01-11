@@ -59,6 +59,7 @@ class SpineExporterConfig:
     output_spine_data_bucket: str
     build_tag: str
     start_datetime: Optional[datetime]
+    end_datetime: Optional[datetime]
     aws_endpoint_url: Optional[str]
 
     @classmethod
@@ -71,4 +72,5 @@ class SpineExporterConfig:
             build_tag=env.read_str("BUILD_TAG"),
             aws_endpoint_url=env.read_optional_str("AWS_ENDPOINT_URL"),
             start_datetime=env.read_optional_datetime("START_DATETIME"),
+            end_datetime=env.read_optional_datetime("END_DATETIME"),
         )
