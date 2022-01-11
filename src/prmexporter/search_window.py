@@ -8,10 +8,16 @@ class SearchWindow:
         self._end_datetime = end_datetime
 
     @classmethod
-    def calculate_start_and_end_time(cls, start_datetime: Optional[datetime]):
+    def calculate_start_and_end_time(
+        cls, start_datetime: Optional[datetime] = None, end_datetime: Optional[datetime] = None
+    ):
+        if start_datetime and end_datetime:
+            return cls(start_datetime, end_datetime)
         if start_datetime:
             end_datetime = start_datetime + timedelta(days=1)
             return cls(start_datetime, end_datetime)
+        elif end_datetime:
+            raise ValueError("Start datetime must be provided if end datetime is provided")
         else:
             today_midnight_datetime = datetime.combine(date.today(), time.min)
             start_of_yesterday_datetime = today_midnight_datetime - timedelta(days=1)
