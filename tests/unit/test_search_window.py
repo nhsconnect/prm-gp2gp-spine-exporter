@@ -146,10 +146,10 @@ def test_returns_list_with_one_datetime_when_start_datetime_is_passed():
 
 
 @freeze_time(datetime(year=2021, month=1, day=1, hour=2, minute=4, second=45))
-def test_returns_list_with_yesterday_datetime_when_start_and_end_datetime_not_passed():
+def test_returns_list_with_yesterday_midnight_datetime_when_start_and_end_datetime_not_passed():
     search_window = SearchWindow.calculate_start_and_end_time()
 
-    expected = [datetime(year=2020, month=12, day=31)]
+    expected = [datetime(year=2020, month=12, day=31, hour=0, minute=0, second=0)]
 
     actual = search_window.get_dates()
 

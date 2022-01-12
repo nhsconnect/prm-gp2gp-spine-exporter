@@ -28,10 +28,15 @@ FAKE_S3_REGION = "us-west-1"
 OUTPUT_BUCKET_NAME = "prm-gp2gp-spine-data"
 API_TOKEN_PARAM_NAME = "test/splunk/api-token"
 
-SPINE_DATA = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
-    2019-12-01T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
-    2019-12-01T18:02:29.985+0000,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
-    019-12-01T18:03:21.908+0000,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
+SPINE_DATA_DAY_1 = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
+    2021-02-06T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
+    2021-02-06T18:02:29.985+0000,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
+    2021-02-06T18:03:21.908+0000,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
+
+SPINE_DATA_DAY_2 = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
+    2021-02-07T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
+    2021-02-07T18:02:29.985+0000,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
+    2021-02-07T18:03:21.908+0000,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
 
 
 class ThreadedServer:
@@ -48,8 +53,20 @@ class ThreadedServer:
 
 
 @Request.application
-def fake_splunk_application(_):
-    return Response(SPINE_DATA, mimetype="text/csv")
+def fake_splunk_application(request):
+    search_start_datetime = request.form.get("earliest_time")
+
+    return Response(
+        _get_fake_response(search_start_datetime),
+        mimetype="text/csv",
+    )
+
+
+def _get_fake_response(search_start_datetime):
+    if search_start_datetime == "2021-02-07T00:00:00":
+        return SPINE_DATA_DAY_2
+    else:
+        return SPINE_DATA_DAY_1
 
 
 def _build_fake_aws(host, port):
@@ -103,7 +120,7 @@ def test_with_s3():
 
         main()
 
-        expected_spine_data = SPINE_DATA.decode("utf-8")
+        expected_spine_data = SPINE_DATA_DAY_1.decode("utf-8")
         actual_spine_data = _read_s3_gzip_csv_file(s3, OUTPUT_BUCKET_NAME, output_path)
 
         assert actual_spine_data == expected_spine_data
@@ -142,7 +159,7 @@ def test_with_specified_start_datetime():
 
         main()
 
-        expected_spine_data = SPINE_DATA.decode("utf-8")
+        expected_spine_data = SPINE_DATA_DAY_1.decode("utf-8")
         actual_spine_data = _read_s3_gzip_csv_file(s3, OUTPUT_BUCKET_NAME, output_path)
 
         assert actual_spine_data == expected_spine_data
@@ -154,6 +171,63 @@ def test_with_specified_start_datetime():
         }
         actual_s3_metadata = _read_s3_metadata(output_bucket, output_path)
         assert actual_s3_metadata == expected_s3_metadata
+
+    finally:
+        fake_splunk.stop()
+        fake_aws.stop()
+
+
+@freeze_time(datetime(year=2021, month=2, day=10, hour=1, second=1))
+def test_with_specified_start_datetime_and_end_datetime():
+    environ["START_DATETIME"] = "2021-02-06T00:00:00"
+    environ["END_DATETIME"] = "2021-02-08T00:00:00"
+    fake_aws, fake_splunk, s3 = _setup()
+
+    try:
+        fake_aws.start()
+        fake_splunk.start()
+        output_bucket = s3.Bucket(OUTPUT_BUCKET_NAME)
+        output_bucket.create()
+
+        year = "2021"
+        month = "02"
+        day_1 = "06"
+        day_2 = "07"
+        output_path_day_1 = (
+            f"{VERSION}/{year}/{month}/{day_1}/{year}-{month}-{day_1}_spine_messages.csv.gz"
+        )
+        output_path_day_2 = (
+            f"{VERSION}/{year}/{month}/{day_2}/{year}-{month}-{day_2}_spine_messages.csv.gz"
+        )
+        _populate_ssm_parameter(API_TOKEN_PARAM_NAME, "abc")
+
+        main()
+
+        expected_spine_data_day_1 = SPINE_DATA_DAY_1.decode("utf-8")
+        actual_spine_data_day_1 = _read_s3_gzip_csv_file(s3, OUTPUT_BUCKET_NAME, output_path_day_1)
+
+        expected_spine_data_day_2 = SPINE_DATA_DAY_2.decode("utf-8")
+        actual_spine_data_day_2 = _read_s3_gzip_csv_file(s3, OUTPUT_BUCKET_NAME, output_path_day_2)
+
+        assert actual_spine_data_day_1 == expected_spine_data_day_1
+        assert actual_spine_data_day_2 == expected_spine_data_day_2
+
+        expected_s3_metadata_day_1 = {
+            "search-start-time": "2021-02-06T00:00:00",
+            "search-end-time": "2021-02-07T00:00:00",
+            "build-tag": "61ad1e1c",
+        }
+        actual_s3_metadata_day_1 = _read_s3_metadata(output_bucket, output_path_day_1)
+
+        expected_s3_metadata_day_2 = {
+            "search-start-time": "2021-02-07T00:00:00",
+            "search-end-time": "2021-02-08T00:00:00",
+            "build-tag": "61ad1e1c",
+        }
+        actual_s3_metadata_day_2 = _read_s3_metadata(output_bucket, output_path_day_2)
+
+        assert actual_s3_metadata_day_1 == expected_s3_metadata_day_1
+        assert actual_s3_metadata_day_2 == expected_s3_metadata_day_2
 
     finally:
         fake_splunk.stop()

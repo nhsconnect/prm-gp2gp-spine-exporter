@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import boto3
 import requests
 
@@ -5,7 +7,7 @@ from prmexporter.config import SpineExporterConfig
 from prmexporter.io.http_client import HttpClient
 from prmexporter.io.s3 import S3DataManager
 from prmexporter.io.secret_manager import SsmSecretManager
-from prmexporter.search_window import SearchWindow
+from prmexporter.search_window import SearchWindow, to_datetime_string
 
 VERSION = "v3"
 
@@ -44,8 +46,7 @@ class SpineExporter:
         )
 
     @staticmethod
-    def _create_s3_key(search_window: SearchWindow) -> str:
-        start_datetime = search_window.get_start_datetime()
+    def _create_s3_key(start_datetime: datetime) -> str:
         year = str(start_datetime.year)
         month = str(start_datetime.month).zfill(2)
         day = str(start_datetime.day).zfill(2)
@@ -66,18 +67,22 @@ class SpineExporter:
 
     def run(self):
         search_window = SearchWindow.calculate_start_and_end_time(
-            start_datetime=self._config.start_datetime
+            start_datetime=self._config.start_datetime, end_datetime=self._config.end_datetime
         )
-        search_start_time = search_window.get_start_datetime_string()
-        search_end_time = search_window.get_end_datetime_string()
+        dates = search_window.get_dates()
 
-        spine_data = self._fetch_spine_data(
-            search_start_time=search_start_time, search_end_time=search_end_time
-        )
-        s3_key = self._create_s3_key(search_window)
-        self._write_spine_data_to_s3(
-            spine_data=spine_data,
-            s3_key=s3_key,
-            search_start_time=search_start_time,
-            search_end_time=search_end_time,
-        )
+        for date in dates:
+            search_start_datetime = to_datetime_string(date)
+            search_end_datetime = to_datetime_string(date + timedelta(days=1))
+
+            spine_data = self._fetch_spine_data(
+                search_start_time=search_start_datetime, search_end_time=search_end_datetime
+            )
+
+            s3_key = self._create_s3_key(date)
+            self._write_spine_data_to_s3(
+                spine_data=spine_data,
+                s3_key=s3_key,
+                search_start_time=search_start_datetime,
+                search_end_time=search_end_datetime,
+            )

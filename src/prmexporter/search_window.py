@@ -4,6 +4,10 @@ from typing import Optional
 from prmexporter.date_converter import date_range_to_dates_converter
 
 
+def to_datetime_string(a_datetime: datetime) -> str:
+    return a_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+
+
 class SearchWindow:
     def __init__(self, start_datetime, end_datetime, dates):
         self._start_datetime = start_datetime
@@ -29,15 +33,11 @@ class SearchWindow:
             dates = [start_of_yesterday_datetime]
             return cls(start_of_yesterday_datetime, today_midnight_datetime, dates)
 
-    @staticmethod
-    def _to_datetime_string(a_datetime: datetime) -> str:
-        return a_datetime.strftime("%Y-%m-%dT%H:%M:%S")
-
     def get_end_datetime_string(self) -> str:
-        return self._to_datetime_string(self._end_datetime)
+        return to_datetime_string(self._end_datetime)
 
     def get_start_datetime_string(self) -> str:
-        return self._to_datetime_string(self._start_datetime)
+        return to_datetime_string(self._start_datetime)
 
     def get_start_datetime(self) -> datetime:
         return self._start_datetime
