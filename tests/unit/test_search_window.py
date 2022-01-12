@@ -109,3 +109,48 @@ def test_throws_exception_when_only_end_datetime_is_passed():
         SearchWindow.calculate_start_and_end_time(end_datetime=end_datetime_input)
 
     assert str(e.value) == "Start datetime must be provided if end datetime is provided"
+
+
+@freeze_time(datetime(year=2021, month=1, day=1, hour=2, minute=4, second=45))
+def test_returns_list_of_datetimes_when_start_and_end_datetimes_are_passed():
+    start_datetime_input = datetime(year=2021, month=12, day=30)
+    end_datetime_input = datetime(year=2022, month=1, day=3)
+
+    search_window = SearchWindow.calculate_start_and_end_time(
+        start_datetime=start_datetime_input, end_datetime=end_datetime_input
+    )
+
+    expected = [
+        datetime(year=2021, month=12, day=30),
+        datetime(year=2021, month=12, day=31),
+        datetime(year=2022, month=1, day=1),
+        datetime(year=2022, month=1, day=2),
+    ]
+
+    actual = search_window.get_dates()
+
+    assert actual == expected
+
+
+@freeze_time(datetime(year=2021, month=1, day=1, hour=2, minute=4, second=45))
+def test_returns_list_with_one_datetime_when_start_datetime_is_passed():
+    start_datetime_input = datetime(year=2021, month=12, day=30)
+
+    search_window = SearchWindow.calculate_start_and_end_time(start_datetime=start_datetime_input)
+
+    expected = [datetime(year=2021, month=12, day=30)]
+
+    actual = search_window.get_dates()
+
+    assert actual == expected
+
+
+@freeze_time(datetime(year=2021, month=1, day=1, hour=2, minute=4, second=45))
+def test_returns_list_with_yesterday_datetime_when_start_and_end_datetime_not_passed():
+    search_window = SearchWindow.calculate_start_and_end_time()
+
+    expected = [datetime(year=2020, month=12, day=31)]
+
+    actual = search_window.get_dates()
+
+    assert actual == expected
