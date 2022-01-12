@@ -138,7 +138,6 @@ def test_with_s3():
         fake_aws.stop()
 
 
-@freeze_time(datetime(year=2021, month=2, day=10, hour=1, second=1))
 def test_with_specified_start_datetime():
     environ["START_DATETIME"] = "2021-02-06T00:00:00"
     fake_aws, fake_splunk, s3 = _setup()
@@ -177,7 +176,6 @@ def test_with_specified_start_datetime():
         fake_aws.stop()
 
 
-@freeze_time(datetime(year=2021, month=2, day=10, hour=1, second=1))
 def test_with_specified_start_datetime_and_end_datetime():
     environ["START_DATETIME"] = "2021-02-06T00:00:00"
     environ["END_DATETIME"] = "2021-02-08T00:00:00"

@@ -4,10 +4,11 @@ import boto3
 import requests
 
 from prmexporter.config import SpineExporterConfig
+from prmexporter.date_converter import convert_to_datetime_string
 from prmexporter.io.http_client import HttpClient
 from prmexporter.io.s3 import S3DataManager
 from prmexporter.io.secret_manager import SsmSecretManager
-from prmexporter.search_window import SearchWindow, to_datetime_string
+from prmexporter.search_dates import SearchDates
 
 VERSION = "v3"
 
@@ -66,14 +67,13 @@ class SpineExporter:
         )
 
     def run(self):
-        search_window = SearchWindow.calculate_start_and_end_time(
+        search_dates = SearchDates(
             start_datetime=self._config.start_datetime, end_datetime=self._config.end_datetime
-        )
-        dates = search_window.get_dates()
+        ).get_dates()
 
-        for date in dates:
-            search_start_datetime = to_datetime_string(date)
-            search_end_datetime = to_datetime_string(date + timedelta(days=1))
+        for date in search_dates:
+            search_start_datetime = convert_to_datetime_string(date)
+            search_end_datetime = convert_to_datetime_string(date + timedelta(days=1))
 
             spine_data = self._fetch_spine_data(
                 search_start_time=search_start_datetime, search_end_time=search_end_datetime
