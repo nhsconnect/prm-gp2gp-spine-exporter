@@ -61,6 +61,7 @@ class SpineExporterConfig:
     start_datetime: Optional[datetime]
     end_datetime: Optional[datetime]
     aws_endpoint_url: Optional[str]
+    search_wait_time_in_seconds: int
 
     @classmethod
     def from_environment_variables(cls, env_vars):
@@ -73,4 +74,5 @@ class SpineExporterConfig:
             aws_endpoint_url=env.read_optional_str("AWS_ENDPOINT_URL"),
             start_datetime=env.read_optional_datetime("START_DATETIME"),
             end_datetime=env.read_optional_datetime("END_DATETIME"),
+            search_wait_time_in_seconds=env.read_optional_int("SEARCH_WAIT_TIME_IN_SECONDS", 0),
         )

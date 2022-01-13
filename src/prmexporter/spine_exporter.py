@@ -87,4 +87,5 @@ class SpineExporter:
                 search_start_time=search_start_datetime,
                 search_end_time=search_end_datetime,
             )
-            time.sleep(30)
+
+            time.sleep(self._config.search_wait_time_in_seconds)

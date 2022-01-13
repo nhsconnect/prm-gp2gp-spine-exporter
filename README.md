@@ -109,6 +109,7 @@ Configuration is achieved via the following environment variables:
 | BUILD_TAG                   | Optional - Unique identifier for version of code build tag (e.g. short git hash) |
 | START_DATETIME              | Optional - The start date and time for the search results date range from Splunk API (must be at midnight) |
 | END_DATETIME                | Optional - The end date and time for the search results date range from Splunk API (must be at midnight) |
+| SEARCH_WAIT_TIME_IN_SECONDS | Optional - Wait time before making another request to Splunk API (default is 0) |
 
 
 ### Troubleshooting
