@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 
 import boto3
@@ -86,3 +87,4 @@ class SpineExporter:
                 search_start_time=search_start_datetime,
                 search_end_time=search_end_datetime,
             )
+            time.sleep(30)
