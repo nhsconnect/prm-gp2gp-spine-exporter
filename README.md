@@ -93,6 +93,12 @@ This will format the code and the imports.
 
 ### Configuration
 
+#### Date range options
+- When START_DATETIME and END_DATETIME are **not** passed then the data retrieved will be for the previous day from midnight plus 24 hours.
+- When START_DATETIME and END_DATETIME are passed then the data retrieved will be for a given date range (end datetime is not included in the date range). Each day within the date range will be saved in a separate file.
+- When START_DATETIME is passed on its own then the data retrieved will be for the given start datetime from midnight plus 24 hours.
+
+#### Environment variables
 Configuration is achieved via the following environment variables:
 
 | Environment variable        | Description                                                           | 
