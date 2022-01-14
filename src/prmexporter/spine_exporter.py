@@ -1,5 +1,7 @@
+import logging
 import time
 from datetime import datetime, timedelta
+from typing import List, Optional
 
 import boto3
 import requests
@@ -10,6 +12,8 @@ from prmexporter.io.http_client import HttpClient
 from prmexporter.io.s3 import S3DataManager
 from prmexporter.io.secret_manager import SsmSecretManager
 from prmexporter.search_dates import SearchDates
+
+logger = logging.getLogger(__name__)
 
 VERSION = "v3"
 
@@ -27,6 +31,22 @@ class SpineExporter:
         )
 
         self._http_client = HttpClient(client=requests)
+
+    @staticmethod
+    def _construct_json_log_date_range_info(
+        start_datetime: Optional[datetime],
+        end_datetime: Optional[datetime],
+        datetimes: List[datetime],
+    ) -> dict:
+        return {
+            "config_start_datetime": convert_to_datetime_string(start_datetime)
+            if start_datetime
+            else "None",
+            "config_end_datetime": convert_to_datetime_string(end_datetime)
+            if end_datetime
+            else "None",
+            "datetimes": [convert_to_datetime_string(a_datetime) for a_datetime in datetimes],
+        }
 
     def _get_api_auth_token(self) -> str:
         return self._ssm_secret_manager.get_secret(self._config.splunk_api_token_param_name)
@@ -72,6 +92,15 @@ class SpineExporter:
             start_datetime=self._config.start_datetime, end_datetime=self._config.end_datetime
         ).get_dates()
 
+        log_date_range_info = self._construct_json_log_date_range_info(
+            self._config.start_datetime, self._config.end_datetime, search_dates
+        )
+
+        logger.info(
+            "Attempting to export data for a date range",
+            extra={"event": "ATTEMPTING_EXPORT_DATA_FOR_A_DATE_RANGE", **log_date_range_info},
+        )
+
         for date in search_dates:
             search_start_datetime = convert_to_datetime_string(date)
             search_end_datetime = convert_to_datetime_string(date + timedelta(days=1))
@@ -89,3 +118,8 @@ class SpineExporter:
             )
 
             time.sleep(self._config.search_wait_time_in_seconds)
+
+        logger.info(
+            "Successfully exported data for a date range",
+            extra={"event": "EXPORTED_DATA_FOR_A_DATE_RANGE", **log_date_range_info},
+        )
