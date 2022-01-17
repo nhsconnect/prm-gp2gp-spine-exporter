@@ -28,15 +28,17 @@ FAKE_S3_REGION = "us-west-1"
 OUTPUT_BUCKET_NAME = "prm-gp2gp-spine-data"
 API_TOKEN_PARAM_NAME = "test/splunk/api-token"
 
+# flake8: noqa: E501
 SPINE_DATA_DAY_1 = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
-    2021-02-06T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
-    2021-02-06T18:02:29.985+0000,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
-    2021-02-06T18:03:21.908+0000,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
+    2021-02-06 08:41:48.337 UTC,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
+    2021-02-06 18:02:29.985 UTC,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
+    2021-02-06 18:03:21.908 UTC,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
 
-SPINE_DATA_DAY_2 = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem
-    2021-02-07T08:41:48.337+0000,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
-    2021-02-07T18:02:29.985+0000,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
-    2021-02-07T18:03:21.908+0000,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
+# flake8: noqa: E501
+SPINE_DATA_DAY_2 = b"""_time,conversationID,GUID,interactionID,messageSender,messageRecipient,messageRef,jdiEvent,toSystem,fromSystem #no QA
+    2021-02-07 08:41:48.337 BST,abc,bcd,IN010000UK13,987654321240,003456789123,bcd,NONE,SupplierC,SupplierA
+    2021-02-07 18:02:29.985 BST,cde,cde,IN010000UK05,123456789123,003456789123,NotProvided,NONE
+    2021-02-07 18:03:21.908 BST,cde,efg,IN030000UK06,003456789123,123456789123,NotProvided,NONE"""
 
 
 class ThreadedServer:
