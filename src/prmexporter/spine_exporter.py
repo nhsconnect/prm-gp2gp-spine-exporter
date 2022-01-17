@@ -117,6 +117,15 @@ class SpineExporter:
                 search_end_time=search_end_datetime,
             )
 
+            if self._config.search_wait_time_in_seconds > 0:
+                logger.info(
+                    "Waiting the specified search wait time before continuing",
+                    extra={
+                        "event": "WAITING_WAIT_TIME",
+                        "search_wait_time_in_seconds": self._config.search_wait_time_in_seconds,
+                    },
+                )
+
             time.sleep(self._config.search_wait_time_in_seconds)
 
         logger.info(
