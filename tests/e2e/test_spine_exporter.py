@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from os import environ
 from threading import Thread
+from unittest.mock import call, patch
 
 import boto3
 from botocore.config import Config
@@ -178,9 +179,11 @@ def test_with_specified_start_datetime():
         fake_aws.stop()
 
 
-def test_with_specified_start_datetime_and_end_datetime():
+@patch("time.sleep", return_value=None)
+def test_with_specified_start_datetime_and_end_datetime_and_wait_time(patched_time_sleep):
     environ["START_DATETIME"] = "2021-02-06T00:00:00"
     environ["END_DATETIME"] = "2021-02-08T00:00:00"
+    environ["SEARCH_WAIT_TIME_IN_SECONDS"] = "30"
     fake_aws, fake_splunk, s3 = _setup()
 
     try:
@@ -229,6 +232,7 @@ def test_with_specified_start_datetime_and_end_datetime():
         assert actual_s3_metadata_day_1 == expected_s3_metadata_day_1
         assert actual_s3_metadata_day_2 == expected_s3_metadata_day_2
 
+        patched_time_sleep.assert_has_calls([call(30), call(30)])
     finally:
         fake_splunk.stop()
         fake_aws.stop()
