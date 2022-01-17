@@ -1,12 +1,14 @@
 from datetime import date, datetime, time, timedelta
 from typing import List, Optional
 
-from prmexporter.date_converter import convert_date_range_to_dates
+from prmexporter.date_converter import convert_date_range_to_dates, convert_to_datetime_string
 
 
 class SearchDates:
     def __init__(self, start_datetime: Optional[datetime], end_datetime: Optional[datetime]):
         self._validate_datetimes(start_datetime, end_datetime)
+        self._end_datetime = end_datetime
+        self._start_datetime = start_datetime
         self._dates = self._calculate_search_dates(start_datetime, end_datetime)
 
     def _calculate_search_dates(
@@ -41,3 +43,12 @@ class SearchDates:
 
     def get_dates(self) -> List[datetime]:
         return self._dates
+
+    def get_dates_string(self) -> List[str]:
+        return [convert_to_datetime_string(a_datetime) for a_datetime in self._dates]
+
+    def get_end_datetime_string(self) -> str:
+        return convert_to_datetime_string(self._end_datetime) if self._end_datetime else "None"
+
+    def get_start_datetime_string(self) -> str:
+        return convert_to_datetime_string(self._start_datetime) if self._start_datetime else "None"

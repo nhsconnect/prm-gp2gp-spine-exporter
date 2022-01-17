@@ -1,7 +1,6 @@
 import logging
 import time
 from datetime import datetime, timedelta
-from typing import List, Optional
 
 import boto3
 import requests
@@ -33,19 +32,11 @@ class SpineExporter:
         self._http_client = HttpClient(client=requests)
 
     @staticmethod
-    def _construct_json_log_date_range_info(
-        start_datetime: Optional[datetime],
-        end_datetime: Optional[datetime],
-        datetimes: List[datetime],
-    ) -> dict:
+    def _construct_json_log_date_range_info(search_dates: SearchDates) -> dict:
         return {
-            "config_start_datetime": convert_to_datetime_string(start_datetime)
-            if start_datetime
-            else "None",
-            "config_end_datetime": convert_to_datetime_string(end_datetime)
-            if end_datetime
-            else "None",
-            "datetimes": [convert_to_datetime_string(a_datetime) for a_datetime in datetimes],
+            "config_start_datetime": search_dates.get_start_datetime_string(),
+            "config_end_datetime": search_dates.get_end_datetime_string(),
+            "datetimes": search_dates.get_dates_string(),
         }
 
     def _get_api_auth_token(self) -> str:
@@ -90,18 +81,17 @@ class SpineExporter:
     def run(self):
         search_dates = SearchDates(
             start_datetime=self._config.start_datetime, end_datetime=self._config.end_datetime
-        ).get_dates()
-
-        log_date_range_info = self._construct_json_log_date_range_info(
-            self._config.start_datetime, self._config.end_datetime, search_dates
         )
+        list_search_dates = search_dates.get_dates()
+
+        log_date_range_info = self._construct_json_log_date_range_info(search_dates)
 
         logger.info(
             "Attempting to export data for a date range",
             extra={"event": "ATTEMPTING_EXPORT_DATA_FOR_A_DATE_RANGE", **log_date_range_info},
         )
 
-        for date in search_dates:
+        for date in list_search_dates:
             search_start_datetime = convert_to_datetime_string(date)
             search_end_datetime = convert_to_datetime_string(date + timedelta(days=1))
 
