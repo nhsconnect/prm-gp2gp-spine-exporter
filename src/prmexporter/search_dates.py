@@ -1,5 +1,7 @@
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from typing import List, Optional
+
+from dateutil.tz import UTC
 
 from prmexporter.date_converter import convert_date_range_to_dates, convert_to_datetime_string
 
@@ -38,7 +40,8 @@ class SearchDates:
 
     @staticmethod
     def _calculate_yesterday_midnight_datetime() -> datetime:
-        today_midnight_datetime = datetime.combine(date.today(), time.min)
+        today_utc = datetime.now(UTC).date()
+        today_midnight_datetime = datetime.combine(today_utc, time.min, tzinfo=UTC)
         return today_midnight_datetime - timedelta(days=1)
 
     def get_dates(self) -> List[datetime]:
