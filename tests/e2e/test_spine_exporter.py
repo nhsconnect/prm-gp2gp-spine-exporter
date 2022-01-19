@@ -83,6 +83,12 @@ def _build_fake_splunk(host, port):
     return ThreadedServer(server)
 
 
+def _build_fake_s3_bucket(bucket_name: str, s3):
+    s3_fake_bucket = s3.Bucket(bucket_name)
+    s3_fake_bucket.create()
+    return s3_fake_bucket
+
+
 def _disable_werkzeug_logging():
     log = logging.getLogger("werkzeug")
     log.setLevel(logging.ERROR)
@@ -106,14 +112,12 @@ def _read_s3_metadata(bucket, key):
 @freeze_time(datetime(year=2021, month=2, day=7, hour=2, second=0))
 def test_with_s3():
     fake_aws, fake_splunk, s3 = _setup()
+    fake_aws.start()
+    fake_splunk.start()
+
+    output_bucket = _build_fake_s3_bucket(OUTPUT_BUCKET_NAME, s3)
 
     try:
-        fake_aws.start()
-        fake_splunk.start()
-
-        output_bucket = s3.Bucket(OUTPUT_BUCKET_NAME)
-        output_bucket.create()
-
         year = "2021"
         month = "02"
         day = "06"
@@ -137,21 +141,22 @@ def test_with_s3():
         assert actual_s3_metadata == expected_s3_metadata
 
     finally:
+        output_bucket.objects.all().delete()
+        output_bucket.delete()
         fake_splunk.stop()
         fake_aws.stop()
+        environ.clear()
 
 
 def test_with_specified_start_datetime():
     environ["START_DATETIME"] = "2021-02-06T00:00:00"
     fake_aws, fake_splunk, s3 = _setup()
+    fake_aws.start()
+    fake_splunk.start()
+
+    output_bucket = _build_fake_s3_bucket(OUTPUT_BUCKET_NAME, s3)
 
     try:
-        fake_aws.start()
-        fake_splunk.start()
-
-        output_bucket = s3.Bucket(OUTPUT_BUCKET_NAME)
-        output_bucket.create()
-
         year = "2021"
         month = "02"
         day = "06"
@@ -175,8 +180,11 @@ def test_with_specified_start_datetime():
         assert actual_s3_metadata == expected_s3_metadata
 
     finally:
+        output_bucket.objects.all().delete()
+        output_bucket.delete()
         fake_splunk.stop()
         fake_aws.stop()
+        environ.clear()
 
 
 @patch("time.sleep", return_value=None)
@@ -185,13 +193,12 @@ def test_with_specified_start_datetime_and_end_datetime_and_wait_time(patched_ti
     environ["END_DATETIME"] = "2021-02-08T00:00:00"
     environ["SEARCH_WAIT_TIME_IN_SECONDS"] = "30"
     fake_aws, fake_splunk, s3 = _setup()
+    fake_aws.start()
+    fake_splunk.start()
+
+    output_bucket = _build_fake_s3_bucket(OUTPUT_BUCKET_NAME, s3)
 
     try:
-        fake_aws.start()
-        fake_splunk.start()
-        output_bucket = s3.Bucket(OUTPUT_BUCKET_NAME)
-        output_bucket.create()
-
         year = "2021"
         month = "02"
         day_1 = "06"
@@ -234,8 +241,11 @@ def test_with_specified_start_datetime_and_end_datetime_and_wait_time(patched_ti
 
         patched_time_sleep.assert_has_calls([call(30), call(30)])
     finally:
+        output_bucket.objects.all().delete()
+        output_bucket.delete()
         fake_splunk.stop()
         fake_aws.stop()
+        environ.clear()
 
 
 def _setup():
