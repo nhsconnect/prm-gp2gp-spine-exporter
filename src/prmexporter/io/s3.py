@@ -28,3 +28,8 @@ class S3DataManager:
             "Successfully uploaded to S3",
             extra={"event": "UPLOADED_CSV_TO_S3", "object_uri": object_uri},
         )
+
+        logger.info(
+            "Spine extract gzip csv byte size",
+            extra={"event": "SPINE_EXTRACT_SIZE_BYTES", "size_in_bytes": len(gzip_object)},
+        )
