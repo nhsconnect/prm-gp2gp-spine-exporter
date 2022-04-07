@@ -2,6 +2,8 @@ import gzip
 import logging
 from typing import Dict
 
+from prmexporter.io.file_utils import calculate_number_of_rows
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,4 +34,9 @@ class S3DataManager:
         logger.info(
             "Spine extract gzip csv byte size",
             extra={"event": "SPINE_EXTRACT_SIZE_BYTES", "size_in_bytes": len(gzip_object)},
+        )
+
+        logger.info(
+            "Spine extract row count",
+            extra={"event": "SPINE_EXTRACT_ROW_COUNT", "row_count": calculate_number_of_rows(data)},
         )
