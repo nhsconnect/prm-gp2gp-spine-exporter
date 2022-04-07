@@ -5,7 +5,12 @@ logger = logging.getLogger(__name__)
 
 
 class HttpClientException(Exception):
-    pass
+    logger.error(
+        Exception,
+        extra={
+            "event": "FAILED_TO_FETCH_DATA_FROM_API",
+        },
+    )
 
 
 class HttpClient:
@@ -29,7 +34,8 @@ class HttpClient:
 
         if response.status_code != 200:
             raise HttpClientException(
-                f"Unable to fetch data from {url} with status code: {response.status_code}"
+                f"Unable to fetch data from {url} with status code: {response.status_code} "
+                f"and response: {response.messages}"
             )
 
         logger.info(

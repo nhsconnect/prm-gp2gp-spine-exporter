@@ -17,10 +17,13 @@ def _setup_logger():
 
 
 def main():
-    _setup_logger()
-    config = SpineExporterConfig.from_environment_variables(environ)
-    spine_exporter = SpineExporter(config)
-    spine_exporter.run()
+    try:
+        _setup_logger()
+        config = SpineExporterConfig.from_environment_variables(environ)
+        spine_exporter = SpineExporter(config)
+        spine_exporter.run()
+    except Exception as ex:
+        logger.error(ex, extra={"event": "FAILED_TO_RUN_MAIN"})
 
 
 if __name__ == "__main__":

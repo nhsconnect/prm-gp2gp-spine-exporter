@@ -5,9 +5,10 @@ import pytest
 from prmexporter.io.http_client import HttpClient, HttpClientException
 
 
-def _build_mock_response(content=None, status_code=200):
+def _build_mock_response(content=None, messages=None, status_code=200):
     mock_response = MagicMock()
     mock_response.content = content
+    mock_response.messages = messages
     mock_response.status_code = status_code
     return mock_response
 
@@ -39,7 +40,7 @@ def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
 def test_throws_exception_when_status_code_is_not_200():
     mock_client = MagicMock()
     test_token = "Abc123"
-    mock_response = _build_mock_response(status_code=500)
+    mock_response = _build_mock_response(status_code=500, messages="Some error message")
 
     mock_client.post.side_effect = [mock_response]
 
@@ -48,4 +49,7 @@ def test_throws_exception_when_status_code_is_not_200():
     with pytest.raises(HttpClientException) as e:
         http_client.make_request(url="test.com", auth_token=test_token)
 
-    assert str(e.value) == "Unable to fetch data from test.com with status code: 500"
+    assert (
+        str(e.value)
+        == "Unable to fetch data from test.com with status code: 500 and response: Some error message"
+    )

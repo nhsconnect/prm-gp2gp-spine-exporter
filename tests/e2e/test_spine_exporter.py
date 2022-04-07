@@ -2,16 +2,18 @@ import logging
 from datetime import datetime
 from os import environ
 from threading import Thread
-from unittest.mock import call, patch
+from unittest import mock
+from unittest.mock import ANY, call, patch
 
 import boto3
+import pytest
 from botocore.config import Config
 from freezegun import freeze_time
 from moto.server import DomainDispatcherApplication, create_backend_app
 from werkzeug import Request, Response
 from werkzeug.serving import make_server
 
-from prmexporter.main import main
+from prmexporter.main import logger, main
 from prmexporter.spine_exporter import VERSION
 from tests.builders.file import open_gzip
 
@@ -269,3 +271,13 @@ def _setup():
     fake_aws = _build_fake_aws(FAKE_AWS_HOST, FAKE_AWS_PORT)
     fake_splunk = _build_fake_splunk(FAKE_SPLUNK_HOST, FAKE_SPLUNK_PORT)
     return fake_aws, fake_splunk, s3
+
+
+def test_exception_in_main():
+    with mock.patch.object(logger, "error") as mock_log_error:
+        main()
+
+    mock_log_error.assert_called_with(
+        ANY,
+        extra={"event": "FAILED_TO_RUN_MAIN"},
+    )
