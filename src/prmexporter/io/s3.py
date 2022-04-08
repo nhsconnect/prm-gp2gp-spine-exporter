@@ -1,5 +1,6 @@
 import gzip
 import logging
+import sys
 from typing import Dict
 
 from prmexporter.io.file_utils import calculate_number_of_rows
@@ -14,6 +15,19 @@ class S3DataManager:
         self._s3_spine_output_data_bucket = self._client.Bucket(self._bucket_name)
 
     def write_gzip_csv(self, data: bytes, s3_key: str, metadata: Dict[str, str]):
+        if calculate_number_of_rows(data) < 2:
+            logger.error(
+                "Spine extract is empty",
+                extra={"event": "ERROR_EMPTY_SPINE_EXTRACT", "size_in_bytes": len(data)},
+            )
+            sys.exit("Spine extract is empty")
+
+        if calculate_number_of_rows(data) < 1000:
+            logger.warning(
+                "Spine extract is small",
+                extra={"event": "WARNING_SMALL_SPINE_EXTRACT", "size_in_bytes": len(data)},
+            )
+
         object_uri = f"s3://{self._bucket_name}/{s3_key}"
         logger.info(
             "Attempting to upload to S3",

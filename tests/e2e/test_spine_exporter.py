@@ -275,7 +275,7 @@ def _setup():
 
 
 def test_exception_in_main():
-    with mock.patch.object(sys, "exit") as exit:
+    with mock.patch.object(sys, "exit") as exitSpy:
         with mock.patch.object(logger, "error") as mock_log_error:
             main()
 
@@ -284,4 +284,4 @@ def test_exception_in_main():
         extra={"event": "FAILED_TO_RUN_MAIN"},
     )
 
-    exit.assert_called_with("Failed to run main")
+    exitSpy.assert_called_with("Failed to run main")

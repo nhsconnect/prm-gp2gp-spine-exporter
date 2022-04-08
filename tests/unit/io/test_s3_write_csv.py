@@ -1,3 +1,4 @@
+import sys
 from unittest import mock
 from unittest.mock import call
 
@@ -53,6 +54,26 @@ def test_writes_metadata():
     actual_metadata = bucket.Object(s3_key).get()["Metadata"]
 
     assert actual_metadata == metadata
+
+
+@mock_s3
+def test_exits_if_there_is_no_data():
+    conn = boto3.resource("s3", region_name=MOTO_MOCK_REGION)
+    bucket_name = "test_bucket"
+    s3_key = "fruits.csv.gz"
+    conn.create_bucket(Bucket=bucket_name)
+    s3_manager = S3DataManager(client=conn, bucket_name=bucket_name)
+
+    with mock.patch.object(sys, "exit") as exitSpy:
+        with mock.patch.object(logger, "error") as logger_spy:
+            s3_manager.write_gzip_csv(data=b"", s3_key=s3_key, metadata={})
+
+    logger_spy.assert_called_with(
+        "Spine extract is empty",
+        extra={"event": "ERROR_EMPTY_SPINE_EXTRACT", "size_in_bytes": 0},
+    )
+
+    exitSpy.assert_called_with("Spine extract is empty")
 
 
 @mock_s3
