@@ -23,7 +23,7 @@ def main():
         spine_exporter = SpineExporter(config)
         spine_exporter.run()
     except Exception as ex:
-        logger.error(ex, extra={"event": "FAILED_TO_RUN_MAIN"})
+        logger.error(str(ex), extra={"event": "FAILED_TO_RUN_MAIN"})
 
 
 if __name__ == "__main__":

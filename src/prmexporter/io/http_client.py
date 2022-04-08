@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class HttpClientException(Exception):
     logger.error(
-        Exception,
+        str(Exception),
         extra={
             "event": "FAILED_TO_FETCH_DATA_FROM_API",
         },
