@@ -1,4 +1,5 @@
 import logging
+import sys
 from os import environ
 
 from prmexporter.config import SpineExporterConfig
@@ -24,6 +25,7 @@ def main():
         spine_exporter.run()
     except Exception as ex:
         logger.error(str(ex), extra={"event": "FAILED_TO_RUN_MAIN"})
+        sys.exit("Failed to run main")
 
 
 if __name__ == "__main__":

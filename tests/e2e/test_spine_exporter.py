@@ -1,4 +1,5 @@
 import logging
+import sys
 from datetime import datetime
 from os import environ
 from threading import Thread
@@ -274,10 +275,13 @@ def _setup():
 
 
 def test_exception_in_main():
-    with mock.patch.object(logger, "error") as mock_log_error:
-        main()
+    with mock.patch.object(sys, "exit") as exit:
+        with mock.patch.object(logger, "error") as mock_log_error:
+            main()
 
     mock_log_error.assert_called_with(
         ANY,
         extra={"event": "FAILED_TO_RUN_MAIN"},
     )
+
+    exit.assert_called_with("Failed to run main")
