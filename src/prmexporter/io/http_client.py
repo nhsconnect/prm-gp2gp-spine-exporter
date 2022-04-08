@@ -35,7 +35,7 @@ class HttpClient:
         if response.status_code != 200:
             raise HttpClientException(
                 f"Unable to fetch data from {url} with status code: {response.status_code} "
-                f"and response: {response.messages}"
+                f"and response: {str(response)}"
             )
 
         logger.info(
