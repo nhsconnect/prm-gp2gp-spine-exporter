@@ -5,12 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class HttpClientException(Exception):
-    logger.error(
-        str(Exception),
-        extra={
-            "event": "FAILED_TO_FETCH_DATA_FROM_API",
-        },
-    )
+    pass
 
 
 class HttpClient:
@@ -33,10 +28,15 @@ class HttpClient:
         response = self._client.post(url=url, data=request_body, headers=headers)
 
         if response.status_code != 200:
-            raise HttpClientException(
+            logger.error(
                 f"Unable to fetch data from {url} with status code: {response.status_code} "
-                f"and response: {str(response)}"
+                f"and response: {str(response)}",
+                extra={
+                    "event": "FAILED_TO_FETCH_DATA_FROM_API",
+                },
             )
+
+            raise HttpClientException(response)
 
         logger.info(
             "Successfully fetched data from API",
