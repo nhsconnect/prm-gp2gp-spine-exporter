@@ -284,4 +284,4 @@ def test_exception_in_main():
         extra={"event": "FAILED_TO_RUN_MAIN"},
     )
 
-    exitSpy.assert_called_with("Failed to run main")
+    exitSpy.assert_called_with("Failed to run main, Exiting...")
