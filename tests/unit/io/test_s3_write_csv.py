@@ -1,8 +1,8 @@
-import sys
 from unittest import mock
 from unittest.mock import call
 
 import boto3
+import pytest
 from moto import mock_s3
 
 from prmexporter.io.s3 import S3DataManager, logger
@@ -64,7 +64,7 @@ def test_exits_if_there_is_no_data():
     conn.create_bucket(Bucket=bucket_name)
     s3_manager = S3DataManager(client=conn, bucket_name=bucket_name)
 
-    with mock.patch.object(sys, "exit") as exitSpy:
+    with pytest.raises(ValueError) as e:
         with mock.patch.object(logger, "error") as logger_spy:
             s3_manager.write_gzip_csv(data=b"", s3_key=s3_key, metadata={})
 
@@ -73,7 +73,7 @@ def test_exits_if_there_is_no_data():
         extra={"event": "ERROR_EMPTY_SPINE_EXTRACT", "size_in_bytes": 0},
     )
 
-    exitSpy.assert_called_with("Spine extract is empty")
+    assert str(e.value) == "Spine extract is empty"
 
 
 @mock_s3

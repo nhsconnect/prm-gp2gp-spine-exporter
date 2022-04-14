@@ -1,6 +1,5 @@
 import gzip
 import logging
-import sys
 from typing import Dict
 
 from prmexporter.io.file_utils import calculate_number_of_rows
@@ -20,7 +19,7 @@ class S3DataManager:
                 "Spine extract is empty",
                 extra={"event": "ERROR_EMPTY_SPINE_EXTRACT", "size_in_bytes": len(data)},
             )
-            sys.exit("Spine extract is empty")
+            raise ValueError("Spine extract is empty")
 
         if calculate_number_of_rows(data) < 1000:
             logger.warning(
