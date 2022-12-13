@@ -7,7 +7,6 @@ from unittest import mock
 from unittest.mock import ANY, call, patch
 
 import boto3
-import pytest
 from botocore.config import Config
 from freezegun import freeze_time
 from moto.server import DomainDispatcherApplication, create_backend_app
