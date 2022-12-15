@@ -39,7 +39,7 @@ def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
 
 def test_throws_exception_when_status_code_is_not_200():
     mock_client = MagicMock()
-    test_token = "Abc123"
+    test_token = "Abcd123"
     mock_response = _build_mock_response(status_code=500)
 
     mock_client.post.side_effect = [mock_response]
