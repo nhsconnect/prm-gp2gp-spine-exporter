@@ -468,7 +468,7 @@
                 "sha256:cc36bfc4a3f913e66805a28e84703e419d9c264c1077e537b54f0e1af85dbefd"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==3.1.29"
+            "version": "==3.1.30"
         },
         "graphql-core": {
             "hashes": [
