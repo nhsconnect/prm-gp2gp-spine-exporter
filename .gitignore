@@ -2,7 +2,6 @@
 .idea/
 .vscode/
 .env
-.python-version
 
 build/
 dist/
