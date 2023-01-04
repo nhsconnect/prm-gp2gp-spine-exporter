@@ -1,5 +1,5 @@
 FROM python:3.9-slim
-
+CMD ["python", "--version"]
 COPY . /prmexporter
 
 ARG IMAGE_TAG
