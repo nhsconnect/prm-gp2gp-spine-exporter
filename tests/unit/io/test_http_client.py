@@ -16,7 +16,7 @@ def _build_mock_response(content=None, messages=None, status_code=200):
 def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
     mock_client = MagicMock()
     test_url = "https://test.com"
-    test_token = "Abcd123"
+    test_token = "Abc123"
     request_body = {"post": "data"}
     mock_response = _build_mock_response(
         content=b'{"data": [{"fruit": "mango", "colour": "orange"}]}'
@@ -39,7 +39,7 @@ def test_makes_an_api_call_to_given_url_with_auth_token_and_returns_data():
 
 def test_throws_exception_when_status_code_is_not_200():
     mock_client = MagicMock()
-    test_token = "Abcd123"
+    test_token = "Abc123"
     mock_response = _build_mock_response(status_code=500)
 
     mock_client.post.side_effect = [mock_response]
