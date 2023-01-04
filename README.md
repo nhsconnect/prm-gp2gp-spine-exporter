@@ -39,8 +39,8 @@ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 #### Install new python and set as default
 
 ```
-pyenv install 3.9.6
-pyenv global 3.9.6
+pyenv install 3.9.16
+pyenv global 3.9.16
 ```
 
 #### Installing pipenv and updating pip
